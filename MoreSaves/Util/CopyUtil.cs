@@ -17,7 +17,9 @@ namespace MoreSaves.Util
         // Easily extendable "filter" in
         // case I can save saving something.
         private static readonly string[] FILTER = {
-            "perma_player_stats.stat"
+            "perma_player_stats.stat",
+            "cached_ugc.stat",
+            "steam_autocloud.vdf",
         };
 
         /// <summary>
