@@ -4,6 +4,7 @@ using JumpKing.Mods;
 using JumpKing.PauseMenu;
 using JumpKing.PauseMenu.BT;
 using JumpKing.SaveThread;
+using Microsoft.Xna.Framework;
 using MoreSaves.Models;
 using MoreSaves.Nodes;
 using MoreSaves.Patching;
@@ -28,9 +29,9 @@ namespace MoreSaves
         }
 
         [MainMenuItemSetting]
-        public static TextButton OpenFolderExplorer(object factory, GuiFormat format)
+        public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
         {
-            return new TextButton("Open Save Folder", new NodeOpenFolderExplorer());
+            return new ExplorerTextButton("Open Save Folder", new NodeOpenFolderExplorer(), Color.Lime);
         }
 
         [PauseMenuItemSetting]
