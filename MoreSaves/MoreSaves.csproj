@@ -73,8 +73,6 @@
     <Compile Include="Util\ExplorerTextButton.cs" />
     <Compile Include="Models\ModelLoadOptions.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="Nodes\NodeChangeFolderOptions.cs" />
-    <Compile Include="Nodes\NodeChangePageOptions.cs" />
     <Compile Include="Nodes\NodeCreateCustomSave.cs" />
     <Compile Include="Nodes\NodeLoadSave.cs" />
     <Compile Include="Nodes\NodeOpenFolderExplorer.cs" />

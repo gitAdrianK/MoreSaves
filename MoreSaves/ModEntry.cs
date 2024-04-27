@@ -25,7 +25,8 @@ namespace MoreSaves
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
         {
-            return new TextButton("Load", ModelLoadOptions.CreateLoadOptions(factory, format));
+            ModelLoadOptions.SetupButtons();
+            return new TextButton("Load", ModelLoadOptions.CreateLoadOptions(factory, format, 0));
         }
 
         [MainMenuItemSetting]
@@ -56,6 +57,8 @@ namespace MoreSaves
             {
                 Directory.CreateDirectory($"{dllDirectory}auto");
             }
+
+            ModelLoadOptions.SetupButtons();
 
             saveName = "";
 
