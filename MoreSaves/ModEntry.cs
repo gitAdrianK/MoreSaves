@@ -4,6 +4,7 @@ using JumpKing.Mods;
 using JumpKing.PauseMenu;
 using JumpKing.PauseMenu.BT;
 using JumpKing.SaveThread;
+using LanguageJK;
 using Microsoft.Xna.Framework;
 using MoreSaves.Models;
 using MoreSaves.Nodes;
@@ -60,7 +61,7 @@ namespace MoreSaves
 
             ModelLoadOptions.SetupButtons();
 
-            saveName = "";
+            saveName = string.Empty;
 
             harmony = new Harmony("Zebra.MoreSaves");
             slSaveCombinedSaveFile = new SlSaveCombinedSaveFile();
@@ -82,15 +83,15 @@ namespace MoreSaves
             {
                 if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedNBP))
                 {
-                    saveName = "New Babe Plus";
+                    saveName = language.GAMETITLESCREEN_NEW_BABE_PLUS;
                 }
                 else if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedGhost))
                 {
-                    saveName = "Ghost of the Babe";
+                    saveName = language.GAMETITLESCREEN_GHOST_OF_THE_BABE;
                 }
                 else
                 {
-                    saveName = "New Game";
+                    saveName = language.GAMETITLESCREEN_NEW_GAME;
                 }
             }
         }
@@ -101,7 +102,7 @@ namespace MoreSaves
         [OnLevelEnd]
         public static void OnLevelEnd()
         {
-            saveName = "";
+            saveName = string.Empty;
         }
     }
 }
