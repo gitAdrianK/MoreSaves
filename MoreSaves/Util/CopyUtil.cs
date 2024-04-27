@@ -14,6 +14,12 @@ namespace MoreSaves.Util
         private static readonly string CONTENT_SAVES = $"Content{SEP}{SAVES}{SEP}";
         private static readonly string CONTENT_SAVES_PERMA = $"Content{SEP}{SAVES_PERMA}{SEP}";
 
+        // Easily extendable "filter" in
+        // case I need to save something else.
+        private static readonly string[] FILTER = {
+            "perma_player_stats.stat"
+        };
+
         /// <summary>
         /// Copys the combined.sav and attempt_stats.stat files out from the Jump King directory.
         /// </summary>
@@ -46,10 +52,7 @@ namespace MoreSaves.Util
             foreach (string filePath in Directory.GetFiles($"{from}{CONTENT_SAVES}"))
             {
                 string file = filePath.Split(SEP).Last();
-                // As far as I know, the combined and attempt_stats.stat file are enough
-                // to copy. But I'll add something of a easily extendable "filter" in
-                // case I need to save something else.
-                if (file != "combined.sav")
+                if (FILTER.Contains(file))
                 {
                     continue;
                 }
@@ -62,8 +65,7 @@ namespace MoreSaves.Util
             foreach (string filePath in Directory.GetFiles($"{from}{CONTENT_SAVES_PERMA}"))
             {
                 string file = filePath.Split(SEP).Last();
-                // See above comment.
-                if (file != "attempt_stats.stat")
+                if (FILTER.Contains(file))
                 {
                     continue;
                 }
