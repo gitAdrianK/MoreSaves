@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using JumpKing.PauseMenu;
 using JumpKing.PauseMenu.BT;
+using LanguageJK;
 using Microsoft.Xna.Framework;
 using MoreSaves.Nodes;
 using System.Collections.Generic;
@@ -68,11 +69,11 @@ namespace MoreSaves.Models
 
             if (page > 0)
             {
-                menuSelector.AddChild(new TextButton("Previous", new MenuSelectorBack(menuSelector)));
+                menuSelector.AddChild(new TextButton(language.PAGINATION_PREVIOUS, new MenuSelectorBack(menuSelector)));
             }
             if (page * AMOUNT + num < buttons.Count)
             {
-                menuSelector.AddChild(new TextButton("Next", CreateLoadOptions(factory, format, page + 1)));
+                menuSelector.AddChild(new TextButton(language.PAGINATION_NEXT, CreateLoadOptions(factory, format, page + 1)));
             }
 
             menuSelector.Initialize();
