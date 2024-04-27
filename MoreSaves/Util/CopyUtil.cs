@@ -15,13 +15,13 @@ namespace MoreSaves.Util
         private static readonly string CONTENT_SAVES_PERMA = $"Content{SEP}{SAVES_PERMA}{SEP}";
 
         // Easily extendable "filter" in
-        // case I need to save something else.
+        // case I can save saving something.
         private static readonly string[] FILTER = {
             "perma_player_stats.stat"
         };
 
         /// <summary>
-        /// Copys the combined.sav and attempt_stats.stat files out from the Jump King directory.
+        /// Copys the save files out from the Jump King directory.
         /// </summary>
         /// <param name="folders">The folder they are supposed to be copied into. Where every string is a subfolder.</param>
         public static void CopyOutSaves(params string[] folders)
@@ -78,7 +78,7 @@ namespace MoreSaves.Util
         }
 
         /// <summary>
-        /// Copys the combined.sav and attempt_stats.stat files into the Jump King directory.
+        /// Copys the save files into the Jump King directory.
         /// </summary>
         /// <param name="folders">The directory they are supposed to be copied from. Where every string is a subfolder.</param>
         public static void CopyInSaves(params string[] folders)
