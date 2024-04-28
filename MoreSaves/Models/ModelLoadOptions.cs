@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
+using JumpKing;
 using JumpKing.PauseMenu;
 using JumpKing.PauseMenu.BT;
 using LanguageJK;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MoreSaves.Nodes;
 using System.Collections.Generic;
 using System.IO;
@@ -23,18 +25,30 @@ namespace MoreSaves.Models
             string dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{sep}";
             string[] autoDirectories = Directory.GetDirectories($"{dllDirectory}auto{sep}");
             string[] manualDirectories = Directory.GetDirectories($"{dllDirectory}manual{sep}");
+            SpriteFont menuFontSmall = Game1.instance.contentManager.font.MenuFontSmall;
 
             buttons = new List<TextButton>();
             foreach (string directory in autoDirectories)
             {
-                string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(dir, new NodeLoadSave("auto", dir)));
+                string dir = GetNameFromPath(directory);
+                buttons.Add(new TextButton(dir, new NodeLoadSave("auto", dir), menuFontSmall));
             }
             foreach (string directory in manualDirectories)
             {
-                string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(dir, new NodeLoadSave("manual", dir)));
+                string dir = GetNameFromPath(directory);
+                buttons.Add(new TextButton(dir, new NodeLoadSave("manual", dir), menuFontSmall));
             }
+        }
+
+        private static string GetNameFromPath(string directory)
+        {
+            char sep = Path.DirectorySeparatorChar;
+            string dir = directory.Split(sep).Last();
+            if (dir.Length > 30)
+            {
+                dir = $"...{dir.Substring(dir.Length - 27)}";
+            }
+            return dir;
         }
 
         public static MenuSelectorClosePopup CreateLoadOptions(object factory, GuiFormat format, int page)
