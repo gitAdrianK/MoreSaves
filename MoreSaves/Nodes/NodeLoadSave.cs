@@ -1,6 +1,5 @@
 ﻿using BehaviorTree;
 using JumpKing;
-using JumpKing.XnaWrappers;
 using MoreSaves.Util;
 using System.Diagnostics;
 
@@ -10,13 +9,9 @@ namespace MoreSaves.Nodes
     {
         private string[] directories;
 
-        private JKSound sound;
-
         public NodeLoadSave(params string[] directories)
         {
             this.directories = directories;
-
-            sound = Game1.instance.contentManager.audio.menu.Select;
         }
 
         protected override BTresult MyRun(TickData p_data)
@@ -28,7 +23,7 @@ namespace MoreSaves.Nodes
                 CopyUtil.CopyInSaves(directories);
                 // XXX: Not even closing, there were some problems, just killing the process.
                 //Game1.instance.Exit();
-                sound.Play();
+                Game1.instance.contentManager.audio.menu.Select.Play();
                 Process.GetCurrentProcess().Kill();
                 return BTresult.Success;
             }

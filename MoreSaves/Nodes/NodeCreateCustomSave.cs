@@ -9,7 +9,7 @@ namespace MoreSaves.Nodes
     {
         protected override BTresult MyRun(TickData p_data)
         {
-            if (ModEntry.saveName == "")
+            if (ModEntry.saveName == string.Empty)
             {
                 Game1.instance.contentManager.audio.menu.MenuFail.Play();
                 return BTresult.Failure;

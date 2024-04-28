@@ -29,7 +29,7 @@ namespace MoreSaves.Patching
 
         public static void SaveCombinedSaveFile()
         {
-            if (ModEntry.saveName == "")
+            if (ModEntry.saveName == string.Empty)
             {
                 return;
             }
