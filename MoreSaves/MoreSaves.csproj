@@ -76,7 +76,7 @@
     <Compile Include="Util\ExplorerTextButton.cs" />
     <Compile Include="Models\ModelLoadOptions.cs" />
     <Compile Include="ModEntry.cs" />
-    <Compile Include="Nodes\NodeCreateCustomSave.cs" />
+    <Compile Include="Nodes\NodeCreateManualSave.cs" />
     <Compile Include="Nodes\NodeLoadSave.cs" />
     <Compile Include="Nodes\NodeOpenFolderExplorer.cs" />
     <Compile Include="Patching\SlSaveCombineSave.cs" />

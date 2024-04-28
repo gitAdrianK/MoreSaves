@@ -15,10 +15,19 @@ namespace MoreSaves.Models
 {
     public class ModelLoadOptions
     {
+        /// <summary>
+        /// Maximum amount of buttons per page.
+        /// </summary>
         private static readonly int AMOUNT = 9;
 
+        /// <summary>
+        /// The buttons that a page can hold.
+        /// </summary>
         private static List<TextButton> buttons;
 
+        /// <summary>
+        /// Reads the auto and manual directories and creates a button for each folder found inside.
+        /// </summary>
         public static void SetupButtons()
         {
             char sep = Path.DirectorySeparatorChar;
@@ -40,13 +49,19 @@ namespace MoreSaves.Models
             }
         }
 
-        private static string CropName(string dir)
+        /// <summary>
+        /// Crops the name should it be longer than 30 characters as it would cause an overflow.
+        /// The name will be cropped at 27 characters and "..." will be inserted at the front to indicate the name having been cropped.
+        /// </summary>
+        /// <param name="name">The name to be cropped</param>
+        /// <returns>The cropped name</returns>
+        private static string CropName(string name)
         {
-            if (dir.Length > 30)
+            if (name.Length > 30)
             {
-                dir = $"...{dir.Substring(dir.Length - 27)}";
+                name = $"...{name.Substring(name.Length - 27)}";
             }
-            return dir;
+            return name;
         }
 
         public static MenuSelectorClosePopup CreateLoadOptions(object factory, GuiFormat format, int page)

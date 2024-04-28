@@ -5,7 +5,10 @@ using System;
 
 namespace MoreSaves.Nodes
 {
-    public class NodeCreateCustomSave : IBTnode
+    /// <summary>
+    /// Node that creates a manual save with the name of the map and a slightly modified ISO 8601.
+    /// </summary>
+    public class NodeCreateManualSave : IBTnode
     {
         protected override BTresult MyRun(TickData p_data)
         {
@@ -15,7 +18,7 @@ namespace MoreSaves.Nodes
                 return BTresult.Failure;
             }
 
-            string date = DateTime.Now.ToString("yyyyMMddHHmmss");
+            string date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string directoryName = $"{ModEntry.saveName}-{date}";
 
             CopyUtil.CopyOutSaves("manual", directoryName);

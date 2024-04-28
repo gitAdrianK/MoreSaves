@@ -37,9 +37,9 @@ namespace MoreSaves
         }
 
         [PauseMenuItemSetting]
-        public static TextButton CreateCustomSave(object factory, GuiFormat format)
+        public static TextButton CreateManualSave(object factory, GuiFormat format)
         {
-            return new TextButton("Create Custom Save", new NodeCreateCustomSave());
+            return new TextButton("Create Manual Save", new NodeCreateManualSave());
         }
 
         /// <summary>

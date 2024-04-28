@@ -6,6 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace MoreSaves.Models
 {
+    /// <summary>
+    /// Custom text button that adds the "Explore" icon to the end of the button.
+    /// </summary>
     public class ExplorerTextButton : TextButton
     {
         private SpriteFont font;
