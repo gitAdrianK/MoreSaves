@@ -51,6 +51,9 @@ namespace MoreSaves.Models
             var gui_left = _this.Field("CONTROLS_GUI_FORMAT_LEFT").GetValue<GuiFormat>();
 
             MenuSelectorClosePopup menuSelector = new MenuSelectorClosePopup(gui_left);
+
+            menuSelector.AddChild(new TextInfo("Loading will close JK!", Color.Red));
+
             int num = 0;
             for (int i = page * AMOUNT; i < page * AMOUNT + AMOUNT; i++)
             {
