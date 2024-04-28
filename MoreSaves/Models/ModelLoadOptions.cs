@@ -30,20 +30,18 @@ namespace MoreSaves.Models
             buttons = new List<TextButton>();
             foreach (string directory in autoDirectories)
             {
-                string dir = GetNameFromPath(directory);
-                buttons.Add(new TextButton(dir, new NodeLoadSave("auto", dir), menuFontSmall));
+                string dir = directory.Split(sep).Last();
+                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave("auto", dir), menuFontSmall));
             }
             foreach (string directory in manualDirectories)
             {
-                string dir = GetNameFromPath(directory);
-                buttons.Add(new TextButton(dir, new NodeLoadSave("manual", dir), menuFontSmall));
+                string dir = directory.Split(sep).Last();
+                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave("manual", dir), menuFontSmall));
             }
         }
 
-        private static string GetNameFromPath(string directory)
+        private static string CropName(string dir)
         {
-            char sep = Path.DirectorySeparatorChar;
-            string dir = directory.Split(sep).Last();
             if (dir.Length > 30)
             {
                 dir = $"...{dir.Substring(dir.Length - 27)}";
