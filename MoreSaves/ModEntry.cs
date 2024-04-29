@@ -31,16 +31,17 @@ namespace MoreSaves
             return new TextButton("Load", ModelLoadOptions.CreateLoadOptions(factory, format, 0));
         }
 
-        [MainMenuItemSetting]
-        public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
-        {
-            return new ExplorerTextButton("Open Save Folder", new NodeOpenFolderExplorer(), Color.Lime);
-        }
-
         [PauseMenuItemSetting]
         public static TextButton CreateManualSave(object factory, GuiFormat format)
         {
             return new TextButton("Create Manual Save", new NodeCreateManualSave());
+        }
+
+        [MainMenuItemSetting]
+        [PauseMenuItemSetting]
+        public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
+        {
+            return new ExplorerTextButton("Open Saves Folder", new NodeOpenFolderExplorer(), Color.Lime);
         }
 
         /// <summary>
