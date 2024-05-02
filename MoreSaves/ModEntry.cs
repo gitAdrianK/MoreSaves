@@ -12,6 +12,7 @@ using MoreSaves.Patching;
 using MoreSaves.Util;
 using System.IO;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace MoreSaves
 {
@@ -78,7 +79,6 @@ namespace MoreSaves
             JKContentManager contentManager = Game1.instance.contentManager;
             if (contentManager.level != null)
             {
-                // Surely the WS disallows illegal characters in file names and I don't have to do jack.
                 saveName = contentManager.level.Name;
             }
             else
@@ -96,6 +96,26 @@ namespace MoreSaves
                     saveName = language.GAMETITLESCREEN_NEW_GAME;
                 }
             }
+
+            saveName = saveName.Trim();
+            if (saveName == string.Empty)
+            {
+                saveName = "Save_emptyName";
+            }
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                saveName = saveName.Replace(c, '#');
+            }
+            foreach (char c in Path.GetInvalidPathChars())
+            {
+                saveName = saveName.Replace(c, '#');
+            }
+            saveName = Regex.Replace(saveName, "^[c|C][o|O][n|N]$", $"Save_{saveName}");
+            saveName = Regex.Replace(saveName, "^[p|P][r|R][n|N]$", $"Save_{saveName}");
+            saveName = Regex.Replace(saveName, "^[a|A][u|U][x|X]$", $"Save_{saveName}");
+            saveName = Regex.Replace(saveName, "^[n|N][u|U][l|L]$", $"Save_{saveName}");
+            saveName = Regex.Replace(saveName, "^[c|C][o|O][m|M]\\d$", $"Save_{saveName}");
+            saveName = Regex.Replace(saveName, "^[l|L][p|P][t|T]\\d$", $"Save_{saveName}");
         }
 
         /// <summary>
