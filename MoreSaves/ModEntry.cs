@@ -19,11 +19,17 @@ namespace MoreSaves
     [JumpKingMod("Zebra.MoreSaves")]
     public static class ModEntry
     {
+        public static string dllDirectory;
+        public static string exeDirectory;
+
         public static string saveName;
 
         public static Harmony harmony;
-        public static SlSaveCombinedSaveFile slSaveCombinedSaveFile;
-        public static bool isNewRun;
+        public static SaveLube saveLube;
+        /// <summary>
+        /// If it should be prevented or not that Jump King is able to save/load.
+        /// </summary>
+        public static bool shouldPrevent;
 
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
@@ -51,8 +57,11 @@ namespace MoreSaves
         [BeforeLevelLoad]
         public static void BeforeLevelLoad()
         {
-            //Debugger.Launch();
-            string dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
+            // Debugger.Launch();
+
+            dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
+            exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";
+
             if (!Directory.Exists($"{dllDirectory}manual"))
             {
                 Directory.CreateDirectory($"{dllDirectory}manual");
@@ -67,7 +76,7 @@ namespace MoreSaves
             saveName = string.Empty;
 
             harmony = new Harmony("Zebra.MoreSaves");
-            slSaveCombinedSaveFile = new SlSaveCombinedSaveFile();
+            saveLube = new SaveLube();
         }
 
         /// <summary>
