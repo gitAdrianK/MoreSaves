@@ -43,10 +43,10 @@ namespace MoreSaves.Nodes
             {
                 ModEntry.shouldPrevent = true;
                 saveManager.StopSaving();
-                // TODO: Reload the game or whatever it uses to determine map loaded somehow.
                 // Optimally start gameplay after the reload.
                 Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
                 Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
+                Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
 
                 MethodInfo saveWithoutWrite = saveLube.GetMethod("SaveWithoutWrite", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo saveCombinedSaveFile = saveWithoutWrite.MakeGenericMethod(typeof(CombinedSaveFile));
@@ -64,9 +64,9 @@ namespace MoreSaves.Nodes
                 MethodInfo saveInit = saveLube.GetMethod("ProgramStartInitialize");
 
                 string directory = ModEntry.dllDirectory;
-                foreach (string s in folders)
+                foreach (string folder in folders)
                 {
-                    directory += s + SEP;
+                    directory += folder + SEP;
                 }
 
                 CombinedSaveFile combinedSaveFile = (CombinedSaveFile)loadCombinedSaveFile.Invoke(null, new object[] { $"{directory}{SEP}{SAVES}{SEP}{COMBINED}" });
@@ -83,9 +83,14 @@ namespace MoreSaves.Nodes
 
                 saveInit.Invoke(null, null);
 
+                object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+                var s = Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
+
+                // TODO: Set flags.
+
                 Game1.instance.contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
-                // TODO: Start gameplay.
+                // CONSIDER: Start gameplay.
             }
             catch (Exception e)
             {
