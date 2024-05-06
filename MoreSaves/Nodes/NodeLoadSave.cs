@@ -1,6 +1,7 @@
 ﻿using BehaviorTree;
 using HarmonyLib;
 using JumpKing;
+using JumpKing.Level;
 using JumpKing.MiscEntities.WorldItems.Inventory;
 using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
@@ -51,6 +52,7 @@ namespace MoreSaves.Nodes
                 Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
                 Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
                 Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+                Type titleScreen = AccessTools.TypeByName("JumpKing.GameManager.TitleScreen.GameTitleScreen");
 
                 MethodInfo saveWithoutWrite = saveLube.GetMethod("SaveWithoutWrite", BindingFlags.NonPublic | BindingFlags.Static);
                 MethodInfo saveCombinedSaveFile = saveWithoutWrite.MakeGenericMethod(typeof(CombinedSaveFile));
@@ -92,19 +94,12 @@ namespace MoreSaves.Nodes
                 }
                 else
                 {
-                    root = $"{ModEntry.dllDirectory}..{SEP}{playerStats.steam_level_id}{SEP}";
                     level = WorkshopManager.instance.levels.Where(lvl => lvl.ID == playerStats.steam_level_id).Single();
+                    root = level.Root;
                 }
 
                 // Save and set
-                saveCombinedSaveFile.Invoke(null, new object[] { SAVES, COMBINED, combinedSaveFile });
-                saveEventFlags.Invoke(null, new object[] { SAVES_PERMA, EVENT, eventFlags });
-                savePlayerStats.Invoke(null, new object[] { SAVES_PERMA, STATS, playerStats });
-                saveInventory.Invoke(null, new object[] { SAVES_PERMA, INVENTORY, inventory });
-                saveGeneralSettings.Invoke(null, new object[] { SAVES_PERMA, SETTINGS, generalSettings });
-                saveInit.Invoke(null, null);
-
-                Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
+                Game1.instance.contentManager.ReinitializeAssets();
 
                 if (root == "Content")
                 {
@@ -115,8 +110,30 @@ namespace MoreSaves.Nodes
                     contentManager.SetLevel(root, level);
                 }
 
+                saveCombinedSaveFile.Invoke(null, new object[] { SAVES, COMBINED, combinedSaveFile });
+                saveEventFlags.Invoke(null, new object[] { SAVES_PERMA, EVENT, eventFlags });
+                savePlayerStats.Invoke(null, new object[] { SAVES_PERMA, STATS, playerStats });
+                saveInventory.Invoke(null, new object[] { SAVES_PERMA, INVENTORY, inventory });
+                saveGeneralSettings.Invoke(null, new object[] { SAVES_PERMA, SETTINGS, generalSettings });
+                saveInit.Invoke(null, null);
+
+                Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
+
+                contentManager.LoadAssets(Game1.instance);
+                LevelManager.LoadScreens();
+
                 // BUG: Loading Main Babe, New Babe+, or Ghost of the Babe seems to work.
                 // What doesn't work is loading a Workshop map.
+                // Found this in SetContentNode. looks interesting
+                // Tested it, still borked, but I'll leave it here.
+                // The vanilla maps are fine, the workshop maps are not, wcyd
+                /*
+                Game1.instance.contentManager.ReinitializeAssets();
+                Game1.instance.contentManager.SetLevel(m_dir, m_level);
+                SaveLube.PlayerPosition = SaveState.GetDefault();
+                Game1.instance.contentManager.LoadAssets(Game1.instance);
+                LevelManager.LoadScreens();
+                */
 
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
