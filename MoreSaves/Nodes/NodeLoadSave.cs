@@ -115,11 +115,8 @@ namespace MoreSaves.Nodes
                     contentManager.SetLevel(root, level);
                 }
 
-                // TODO: Set flags. Looks unlikely that this is needed tbh.
-                // BUG: The map loaded into is wrong.
-                // Loading the assets this way messes up.
-                contentManager.ReinitializeAssets();
-                contentManager.LoadAssets(Game1.instance);
+                // BUG: Loading Main Babe, New Babe+, or Ghost of the Babe seems to work.
+                // What doesn't work is loading a Workshop map.
 
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
