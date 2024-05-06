@@ -122,18 +122,8 @@ namespace MoreSaves.Nodes
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
 
-                // BUG: Loading Main Babe, New Babe+, or Ghost of the Babe seems to work.
-                // What doesn't work is loading a Workshop map.
-                // Found this in SetContentNode. looks interesting
-                // Tested it, still borked, but I'll leave it here.
-                // The vanilla maps are fine, the workshop maps are not, wcyd
-                /*
-                Game1.instance.contentManager.ReinitializeAssets();
-                Game1.instance.contentManager.SetLevel(m_dir, m_level);
-                SaveLube.PlayerPosition = SaveState.GetDefault();
-                Game1.instance.contentManager.LoadAssets(Game1.instance);
-                LevelManager.LoadScreens();
-                */
+                // BUG: Nvm, what doesn't seem to work now are the vanilla maps.
+                // Workshop maps seem fine
 
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
