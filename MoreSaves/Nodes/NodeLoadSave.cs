@@ -6,7 +6,6 @@ using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
 using JumpKing.Workshop;
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -46,7 +45,8 @@ namespace MoreSaves.Nodes
             {
                 ModEntry.shouldPrevent = true;
                 saveManager.StopSaving();
-                // Optimally start gameplay after the reload.
+
+                // Classes and methods.
                 Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
                 Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
                 Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
@@ -66,6 +66,9 @@ namespace MoreSaves.Nodes
 
                 MethodInfo saveInit = saveLube.GetMethod("ProgramStartInitialize");
 
+                object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+
+                // Load from dllDirectory
                 string directory = ModEntry.dllDirectory;
                 foreach (string folder in folders)
                 {
@@ -78,35 +81,52 @@ namespace MoreSaves.Nodes
                 Inventory inventory = (Inventory)loadInventory.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{INVENTORY}" });
                 GeneralSettings generalSettings = XmlSerializerHelper.Deserialize<GeneralSettings>($"{directory}{SEP}{SAVES_PERMA}{SEP}{SETTINGS}");
 
+                // Root and level.
+                string root;
+                Level level = null;
+
+                if (playerStats.steam_level_id == null)
+                {
+                    root = "Content";
+                }
+                else
+                {
+                    root = $"{ModEntry.dllDirectory}..{SEP}{playerStats.steam_level_id}{SEP}";
+                    foreach (Level lvl in WorkshopManager.instance.levels)
+                    {
+                        if (lvl.ID == playerStats.steam_level_id)
+                        {
+                            level = lvl;
+                            break;
+                        }
+                    }
+                    if (level == null)
+                    {
+                        throw new Exception();
+                    }
+                }
+
+                // Save and set
                 saveCombinedSaveFile.Invoke(null, new object[] { SAVES, COMBINED, combinedSaveFile });
                 saveEventFlags.Invoke(null, new object[] { SAVES_PERMA, EVENT, eventFlags });
                 savePlayerStats.Invoke(null, new object[] { SAVES_PERMA, STATS, playerStats });
                 saveInventory.Invoke(null, new object[] { SAVES_PERMA, INVENTORY, inventory });
                 saveGeneralSettings.Invoke(null, new object[] { SAVES_PERMA, SETTINGS, generalSettings });
-
                 saveInit.Invoke(null, null);
 
-                object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
-                var s = Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
+                Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
 
-                if (playerStats.steam_level_id == null)
+                if (root == "Content")
                 {
-                    // Untested.
-                    contentManager.SetLevel("Content");
+                    contentManager.SetLevel(root);
                 }
                 else
                 {
-                    string root = $"{ModEntry.dllDirectory}..{SEP}{playerStats.steam_level_id}{SEP}";
-                    // TODO: Can't create level, something is null so there's an exception later, thinking it might be the SteamUGCDetails_t.
-                    Debugger.Log(1, "", ">>> " + root + "\n");
-                    Debugger.Log(1, "", ">>> " + File.Exists($"{root}{Level.FileName}") + "\n");
-                    Level level = new Level(root);
-                    Debugger.Log(1, "", ">>> " + (level != null) + "\n");
-                    Debugger.Log(1, "", ">>> " + level?.Name + "\n");
-                    //contentManager.SetLevel(root, level);
+                    contentManager.SetLevel(root, level);
                 }
 
                 // TODO: Set flags. Looks unlikely that this is needed tbh.
+                // BUG: The map loaded into is wrong.
 
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
