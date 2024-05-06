@@ -4,7 +4,9 @@ using JumpKing;
 using JumpKing.MiscEntities.WorldItems.Inventory;
 using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
+using JumpKing.Workshop;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 
@@ -38,6 +40,7 @@ namespace MoreSaves.Nodes
 
         protected override BTresult MyRun(TickData p_data)
         {
+            JKContentManager contentManager = Game1.instance.contentManager;
             SaveManager saveManager = SaveManager.instance;
             try
             {
@@ -86,15 +89,32 @@ namespace MoreSaves.Nodes
                 object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
                 var s = Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
 
-                // TODO: Set flags.
+                if (playerStats.steam_level_id == null)
+                {
+                    // Untested.
+                    contentManager.SetLevel("Content");
+                }
+                else
+                {
+                    string root = $"{ModEntry.dllDirectory}..{SEP}{playerStats.steam_level_id}{SEP}";
+                    // TODO: Can't create level, something is null so there's an exception later, thinking it might be the SteamUGCDetails_t.
+                    Debugger.Log(1, "", ">>> " + root + "\n");
+                    Debugger.Log(1, "", ">>> " + File.Exists($"{root}{Level.FileName}") + "\n");
+                    Level level = new Level(root);
+                    Debugger.Log(1, "", ">>> " + (level != null) + "\n");
+                    Debugger.Log(1, "", ">>> " + level?.Name + "\n");
+                    //contentManager.SetLevel(root, level);
+                }
 
-                Game1.instance.contentManager.audio.menu.Select.Play();
+                // TODO: Set flags. Looks unlikely that this is needed tbh.
+
+                contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
                 // CONSIDER: Start gameplay.
             }
             catch (Exception e)
             {
-                Game1.instance.contentManager.audio.menu.MenuFail.Play();
+                contentManager.audio.menu.MenuFail.Play();
                 throw e;
             }
             finally
