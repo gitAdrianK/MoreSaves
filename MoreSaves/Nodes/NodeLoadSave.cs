@@ -7,6 +7,7 @@ using JumpKing.SaveThread;
 using JumpKing.Workshop;
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace MoreSaves.Nodes
@@ -92,18 +93,7 @@ namespace MoreSaves.Nodes
                 else
                 {
                     root = $"{ModEntry.dllDirectory}..{SEP}{playerStats.steam_level_id}{SEP}";
-                    foreach (Level lvl in WorkshopManager.instance.levels)
-                    {
-                        if (lvl.ID == playerStats.steam_level_id)
-                        {
-                            level = lvl;
-                            break;
-                        }
-                    }
-                    if (level == null)
-                    {
-                        throw new Exception();
-                    }
+                    level = WorkshopManager.instance.levels.Where(lvl => lvl.ID == playerStats.steam_level_id).Single();
                 }
 
                 // Save and set
@@ -127,6 +117,9 @@ namespace MoreSaves.Nodes
 
                 // TODO: Set flags. Looks unlikely that this is needed tbh.
                 // BUG: The map loaded into is wrong.
+                // Loading the assets this way messes up.
+                contentManager.ReinitializeAssets();
+                contentManager.LoadAssets(Game1.instance);
 
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
