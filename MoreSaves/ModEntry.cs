@@ -10,7 +10,6 @@ using MoreSaves.Models;
 using MoreSaves.Nodes;
 using MoreSaves.Patching;
 using MoreSaves.Util;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -27,10 +26,6 @@ namespace MoreSaves
 
         public static Harmony harmony;
         public static SaveLube saveLube;
-        /// <summary>
-        /// If it should be prevented or not that Jump King is able to save/load.
-        /// </summary>
-        public static bool shouldPrevent;
 
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
@@ -58,7 +53,7 @@ namespace MoreSaves
         [BeforeLevelLoad]
         public static void BeforeLevelLoad()
         {
-            Debugger.Launch();
+            // Debugger.Launch();
 
             dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
             exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";

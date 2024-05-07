@@ -45,21 +45,18 @@ namespace MoreSaves.Nodes
             SaveManager saveManager = SaveManager.instance;
             try
             {
-                ModEntry.shouldPrevent = true;
                 saveManager.StopSaving();
 
                 // Classes and methods.
                 Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
                 Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
                 Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
-                Type titleScreen = AccessTools.TypeByName("JumpKing.GameManager.TitleScreen.GameTitleScreen");
 
-                MethodInfo saveWithoutWrite = saveLube.GetMethod("SaveWithoutWrite", BindingFlags.NonPublic | BindingFlags.Static);
-                MethodInfo saveCombinedSaveFile = saveWithoutWrite.MakeGenericMethod(typeof(CombinedSaveFile));
-                MethodInfo saveEventFlags = saveWithoutWrite.MakeGenericMethod(typeof(EventFlagsSave));
-                MethodInfo savePlayerStats = saveWithoutWrite.MakeGenericMethod(typeof(PlayerStats));
-                MethodInfo saveInventory = saveWithoutWrite.MakeGenericMethod(typeof(Inventory));
-                MethodInfo saveGeneralSettings = saveWithoutWrite.MakeGenericMethod(typeof(GeneralSettings));
+                MethodInfo setCombinedSave = saveLube.GetMethod("set_CombinedSave");
+                MethodInfo setEventFlags = saveLube.GetMethod("set_eventFlags");
+                MethodInfo setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
+                MethodInfo setInventory = saveLube.GetMethod("set_inventory");
+                MethodInfo setGeneralSettings = saveLube.GetMethod("set_generalSettings");
 
                 MethodInfo loadFile = encryption.GetMethod("LoadFile");
                 MethodInfo loadCombinedSaveFile = loadFile.MakeGenericMethod(typeof(CombinedSaveFile));
@@ -67,9 +64,10 @@ namespace MoreSaves.Nodes
                 MethodInfo loadPlayerStats = loadFile.MakeGenericMethod(typeof(PlayerStats));
                 MethodInfo loadInventory = loadFile.MakeGenericMethod(typeof(Inventory));
 
-                MethodInfo saveInit = saveLube.GetMethod("ProgramStartInitialize");
+                MethodInfo saveProgramStartInitialize = saveLube.GetMethod("ProgramStartInitialize");
+                MethodInfo saveCombinedSaveFile = saveLube.GetMethod("SaveCombinedSaveFile");
 
-                object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null);
+                object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
 
                 // Load from dllDirectory
                 string directory = ModEntry.dllDirectory;
@@ -94,7 +92,7 @@ namespace MoreSaves.Nodes
                 }
                 else
                 {
-                    level = WorkshopManager.instance.levels.Where(lvl => lvl.ID == playerStats.steam_level_id).Single();
+                    level = WorkshopManager.instance.levels.First(lvl => lvl.ID == playerStats.steam_level_id);
                     root = level.Root;
                 }
 
@@ -110,24 +108,25 @@ namespace MoreSaves.Nodes
                     contentManager.SetLevel(root, level);
                 }
 
-                saveCombinedSaveFile.Invoke(null, new object[] { SAVES, COMBINED, combinedSaveFile });
-                saveEventFlags.Invoke(null, new object[] { SAVES_PERMA, EVENT, eventFlags });
-                savePlayerStats.Invoke(null, new object[] { SAVES_PERMA, STATS, playerStats });
-                saveInventory.Invoke(null, new object[] { SAVES_PERMA, INVENTORY, inventory });
-                saveGeneralSettings.Invoke(null, new object[] { SAVES_PERMA, SETTINGS, generalSettings });
-                saveInit.Invoke(null, null);
+                setCombinedSave.Invoke(null, new object[] { combinedSaveFile });
+                // This is probably not needed with me setting the event flags via EventFlagsSave.Save too.
+                setEventFlags.Invoke(null, new object[] { eventFlags });
+                setPlayerStats.Invoke(null, new object[] { playerStats });
+                setInventory.Invoke(null, new object[] { inventory });
+                setGeneralSettings.Invoke(null, new object[] { generalSettings });
+
+                saveCombinedSaveFile.Invoke(null, null);
+                saveProgramStartInitialize.Invoke(null, null);
 
                 Traverse.Create(achievementManagerInstance).Field("m_snapshot").SetValue(playerStats);
+
+                EventFlagsSave.Save = eventFlags;
 
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
 
-                // BUG: Nvm, what doesn't seem to work now are the vanilla maps.
-                // Workshop maps seem fine
-
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
-                // CONSIDER: Start gameplay.
             }
             catch (Exception e)
             {
@@ -137,7 +136,6 @@ namespace MoreSaves.Nodes
             finally
             {
                 saveManager.StartSaving();
-                ModEntry.shouldPrevent = false;
             }
             return BTresult.Success;
         }

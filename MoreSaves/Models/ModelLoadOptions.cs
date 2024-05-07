@@ -79,7 +79,7 @@ namespace MoreSaves.Models
 
             MenuSelectorClosePopup menuSelector = new MenuSelectorClosePopup(gui_left);
 
-            menuSelector.AddChild(new TextInfo("Loading will close JK!", Color.Red));
+            menuSelector.AddChild(new TextInfo("Load Save!", Color.White));
 
             int num = 0;
             for (int i = page * AMOUNT; i < page * AMOUNT + AMOUNT; i++)
