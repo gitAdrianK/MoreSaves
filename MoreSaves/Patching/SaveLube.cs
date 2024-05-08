@@ -4,6 +4,7 @@ using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
 using MoreSaves.Util;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace MoreSaves.Patching
@@ -23,27 +24,35 @@ namespace MoreSaves.Patching
             MethodInfo savePlayerStats = generic.MakeGenericMethod(typeof(PlayerStats));
             MethodInfo saveInventory = generic.MakeGenericMethod(typeof(Inventory));
             MethodInfo saveGeneralSettings = generic.MakeGenericMethod(typeof(GeneralSettings));
-            HarmonyMethod patch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
+            HarmonyMethod savePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
 
             ModEntry.harmony.Patch(
                 saveCombinedSaveFile,
-                postfix: patch
+                postfix: savePatch
             );
             ModEntry.harmony.Patch(
                 saveEventFlags,
-                postfix: patch
+                postfix: savePatch
             );
             ModEntry.harmony.Patch(
                 savePlayerStats,
-                postfix: patch
+                postfix: savePatch
             );
             ModEntry.harmony.Patch(
                 saveInventory,
-                postfix: patch
+                postfix: savePatch
             );
             ModEntry.harmony.Patch(
                 saveGeneralSettings,
-                postfix: patch
+                postfix: savePatch
+            );
+
+            MethodInfo deleteSave = saveLube.GetMethod("DeleteSaves");
+            HarmonyMethod deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+
+            ModEntry.harmony.Patch(
+                deleteSave,
+                postfix: deletePatch
             );
         }
 
@@ -54,6 +63,14 @@ namespace MoreSaves.Patching
                 return;
             }
             CopyUtil.CopyOutSaves("auto", ModEntry.saveName);
+        }
+
+        public static void DeleteSaves()
+        {
+            char sep = Path.DirectorySeparatorChar;
+            string directory = $"{ModEntry.dllDirectory}{sep}auto{sep}{ModEntry.saveName}{sep}";
+            Directory.Delete(directory, true);
+            ModEntry.saveName = string.Empty;
         }
     }
 }
