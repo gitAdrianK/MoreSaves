@@ -30,8 +30,6 @@ namespace MoreSaves.Nodes
         private static readonly string INVENTORY = "inventory.inv";
         private static readonly string SETTINGS = "general_settings.set";
 
-        private static bool isInitialized;
-
         private static JKContentManager contentManager;
         private static SaveManager saveManager;
 
@@ -59,22 +57,8 @@ namespace MoreSaves.Nodes
 
         private string directory;
 
-        public NodeLoadSave(params string[] folders)
+        static NodeLoadSave()
         {
-            Initialize();
-            directory = ModEntry.dllDirectory;
-            foreach (string folder in folders)
-            {
-                directory += folder + SEP;
-            }
-        }
-
-        private void Initialize()
-        {
-            if (isInitialized)
-            {
-                return;
-            }
             // Classes and methods.
             contentManager = Game1.instance.contentManager;
             saveManager = SaveManager.instance;
@@ -100,8 +84,15 @@ namespace MoreSaves.Nodes
 
             achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
             achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+        }
 
-            isInitialized = true;
+        public NodeLoadSave(params string[] folders)
+        {
+            directory = ModEntry.dllDirectory;
+            foreach (string folder in folders)
+            {
+                directory += folder + SEP;
+            }
         }
 
         protected override BTresult MyRun(TickData p_data)
