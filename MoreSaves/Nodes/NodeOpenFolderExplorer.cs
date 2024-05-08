@@ -13,8 +13,8 @@ namespace MoreSaves.Nodes
     {
         protected override BTresult MyRun(TickData p_data)
         {
-            Game1.instance.contentManager.audio.menu.Select.Play();
             Process.Start("explorer.exe", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            Game1.instance.contentManager.audio.menu.Select.Play();
             return BTresult.Success;
         }
     }

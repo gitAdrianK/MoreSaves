@@ -26,10 +26,6 @@ namespace MoreSaves
 
         public static Harmony harmony;
         public static SaveLube saveLube;
-        /// <summary>
-        /// If it should be prevented or not that Jump King is able to save/load.
-        /// </summary>
-        public static bool shouldPrevent;
 
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
