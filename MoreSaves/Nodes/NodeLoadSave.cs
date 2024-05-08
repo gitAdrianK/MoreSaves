@@ -38,7 +38,6 @@ namespace MoreSaves.Nodes
         private static Type achievementManager;
 
         private static MethodInfo setCombinedSave;
-        private static MethodInfo setEventFlags;
         private static MethodInfo setPlayerStats;
         private static MethodInfo setInventory;
         private static MethodInfo setGeneralSettings;
@@ -68,7 +67,6 @@ namespace MoreSaves.Nodes
             achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
 
             setCombinedSave = saveLube.GetMethod("set_CombinedSave");
-            setEventFlags = saveLube.GetMethod("set_eventFlags");
             setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
             setInventory = saveLube.GetMethod("set_inventory");
             setGeneralSettings = saveLube.GetMethod("set_generalSettings");
@@ -135,18 +133,15 @@ namespace MoreSaves.Nodes
                 }
 
                 setCombinedSave.Invoke(null, new object[] { combinedSaveFile });
-                // This is probably not needed with me setting the event flags via EventFlagsSave.Save too.
-                setEventFlags.Invoke(null, new object[] { eventFlags });
                 setPlayerStats.Invoke(null, new object[] { playerStats });
                 setInventory.Invoke(null, new object[] { inventory });
                 setGeneralSettings.Invoke(null, new object[] { generalSettings });
+                EventFlagsSave.Save = eventFlags;
 
                 saveCombinedSaveFile.Invoke(null, null);
                 saveProgramStartInitialize.Invoke(null, null);
 
                 achievementManagerTraverse.Field("m_snapshot").SetValue(playerStats);
-
-                EventFlagsSave.Save = eventFlags;
 
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
