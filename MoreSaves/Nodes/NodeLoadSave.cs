@@ -5,8 +5,10 @@ using JumpKing.Level;
 using JumpKing.MiscEntities.WorldItems.Inventory;
 using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
+using JumpKing.SaveThread.SaveComponents;
 using JumpKing.Workshop;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -30,29 +32,32 @@ namespace MoreSaves.Nodes
         private static readonly string INVENTORY = "inventory.inv";
         private static readonly string SETTINGS = "general_settings.set";
 
-        private static JKContentManager contentManager;
-        private static SaveManager saveManager;
+        private static readonly JKContentManager contentManager;
+        private static readonly SaveManager saveManager;
 
-        private static Type saveLube;
-        private static Type encryption;
-        private static Type achievementManager;
+        private static readonly Type saveLube;
+        private static readonly Type encryption;
+        private static readonly Type achievementManager;
+        private static readonly Type skinManager;
 
-        private static MethodInfo setCombinedSave;
-        private static MethodInfo setPlayerStats;
-        private static MethodInfo setInventory;
-        private static MethodInfo setGeneralSettings;
+        private static readonly MethodInfo setCombinedSave;
+        private static readonly MethodInfo setPlayerStats;
+        private static readonly MethodInfo setInventory;
+        private static readonly MethodInfo setGeneralSettings;
 
-        private static MethodInfo loadFile;
-        private static MethodInfo loadCombinedSaveFile;
-        private static MethodInfo loadEventFlags;
-        private static MethodInfo loadPlayerStats;
-        private static MethodInfo loadInventory;
+        private static readonly MethodInfo setSkinEnabled;
 
-        private static MethodInfo saveProgramStartInitialize;
-        private static MethodInfo saveCombinedSaveFile;
+        private static readonly MethodInfo loadFile;
+        private static readonly MethodInfo loadCombinedSaveFile;
+        private static readonly MethodInfo loadEventFlags;
+        private static readonly MethodInfo loadPlayerStats;
+        private static readonly MethodInfo loadInventory;
 
-        private static object achievementManagerInstance;
-        private static Traverse achievementManagerTraverse;
+        private static readonly MethodInfo saveProgramStartInitialize;
+        private static readonly MethodInfo saveCombinedSaveFile;
+
+        private static readonly object achievementManagerInstance;
+        private static readonly Traverse achievementManagerTraverse;
 
         private string directory;
 
@@ -65,11 +70,14 @@ namespace MoreSaves.Nodes
             saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
             encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
             achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+            skinManager = AccessTools.TypeByName("JumpKing.Player.Skins.SkinManager");
 
             setCombinedSave = saveLube.GetMethod("set_CombinedSave");
             setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
             setInventory = saveLube.GetMethod("set_inventory");
             setGeneralSettings = saveLube.GetMethod("set_generalSettings");
+
+            setSkinEnabled = skinManager.GetMethod("SetSkinEnabled");
 
             loadFile = encryption.GetMethod("LoadFile");
             loadCombinedSaveFile = loadFile.MakeGenericMethod(typeof(CombinedSaveFile));
@@ -137,6 +145,12 @@ namespace MoreSaves.Nodes
                 setInventory.Invoke(null, new object[] { inventory });
                 setGeneralSettings.Invoke(null, new object[] { generalSettings });
                 EventFlagsSave.Save = eventFlags;
+
+                List<ItemEquipOptions.ItemOption> options = new List<ItemEquipOptions.ItemOption>(generalSettings.item_options.Save.options);
+                foreach (var option in options)
+                {
+                    setSkinEnabled.Invoke(null, new object[] { option.item, option.equipped });
+                }
 
                 saveCombinedSaveFile.Invoke(null, null);
                 saveProgramStartInitialize.Invoke(null, null);
