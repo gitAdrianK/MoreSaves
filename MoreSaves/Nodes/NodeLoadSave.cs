@@ -29,6 +29,7 @@ namespace MoreSaves.Nodes
         private static readonly string COMBINED = "combined.sav";
         private static readonly string EVENT = "event_flags.set";
         private static readonly string STATS = "attempt_stats.stat";
+        private static readonly string PERMANENT = "perma_player_stats.stat";
         private static readonly string INVENTORY = "inventory.inv";
         private static readonly string SETTINGS = "general_settings.set";
 
@@ -42,6 +43,7 @@ namespace MoreSaves.Nodes
 
         private static readonly MethodInfo setCombinedSave;
         private static readonly MethodInfo setPlayerStats;
+        private static readonly MethodInfo setPermanentStats;
         private static readonly MethodInfo setInventory;
         private static readonly MethodInfo setGeneralSettings;
 
@@ -74,6 +76,7 @@ namespace MoreSaves.Nodes
 
             setCombinedSave = saveLube.GetMethod("set_CombinedSave");
             setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
+            setPermanentStats = saveLube.GetMethod("set_PermanentPlayerStats");
             setInventory = saveLube.GetMethod("set_inventory");
             setGeneralSettings = saveLube.GetMethod("set_generalSettings");
 
@@ -111,6 +114,7 @@ namespace MoreSaves.Nodes
                 CombinedSaveFile combinedSaveFile = (CombinedSaveFile)loadCombinedSaveFile.Invoke(null, new object[] { $"{directory}{SEP}{SAVES}{SEP}{COMBINED}" });
                 EventFlagsSave eventFlags = (EventFlagsSave)loadEventFlags.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{EVENT}" });
                 PlayerStats playerStats = (PlayerStats)loadPlayerStats.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{STATS}" });
+                PlayerStats permaStats = (PlayerStats)loadPlayerStats.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{PERMANENT}" });
                 Inventory inventory = (Inventory)loadInventory.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{INVENTORY}" });
                 GeneralSettings generalSettings = XmlSerializerHelper.Deserialize<GeneralSettings>($"{directory}{SEP}{SAVES_PERMA}{SEP}{SETTINGS}");
 
@@ -156,6 +160,7 @@ namespace MoreSaves.Nodes
                 saveProgramStartInitialize.Invoke(null, null);
 
                 achievementManagerTraverse.Field("m_snapshot").SetValue(playerStats);
+                achievementManagerTraverse.Field("m_all_time_stats").SetValue(permaStats);
 
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();

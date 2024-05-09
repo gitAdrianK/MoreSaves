@@ -16,6 +16,7 @@ namespace MoreSaves.Util
         private static readonly string[] WHITELIST = {
             "combined.sav",
             "attempt_stats.stat",
+            "perma_player_stats.stat",
             "event_flags.set",
             "general_settings.set",
             "inventory.inv",
