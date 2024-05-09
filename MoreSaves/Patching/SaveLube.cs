@@ -4,6 +4,7 @@ using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
 using MoreSaves.Util;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace MoreSaves.Patching
@@ -45,6 +46,14 @@ namespace MoreSaves.Patching
                 saveGeneralSettings,
                 postfix: savePatch
             );
+
+            MethodInfo deleteSave = saveLube.GetMethod("DeleteSaves");
+            HarmonyMethod deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+
+            ModEntry.harmony.Patch(
+                deleteSave,
+                postfix: deletePatch
+            );
         }
 
         public static void CopySavefile()
@@ -54,6 +63,18 @@ namespace MoreSaves.Patching
                 return;
             }
             CopyUtil.CopyOutSaves("auto", ModEntry.saveName);
+        }
+
+        public static void DeleteSaves()
+        {
+            if (ModEntry.saveName == string.Empty)
+            {
+                return;
+            }
+            char sep = Path.DirectorySeparatorChar;
+            string directory = $"{ModEntry.dllDirectory}{sep}auto{sep}{ModEntry.saveName}{sep}";
+            Directory.Delete(directory, true);
+            ModEntry.saveName = string.Empty;
         }
     }
 }
