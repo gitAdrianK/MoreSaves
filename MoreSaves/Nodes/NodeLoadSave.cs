@@ -146,6 +146,7 @@ namespace MoreSaves.Nodes
 
                 setCombinedSave.Invoke(null, new object[] { combinedSaveFile });
                 setPlayerStats.Invoke(null, new object[] { playerStats });
+                setPermanentStats.Invoke(null, new object[] { permaStats });
                 setInventory.Invoke(null, new object[] { inventory });
                 setGeneralSettings.Invoke(null, new object[] { generalSettings });
                 EventFlagsSave.Save = eventFlags;
