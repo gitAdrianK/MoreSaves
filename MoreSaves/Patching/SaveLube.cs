@@ -73,7 +73,10 @@ namespace MoreSaves.Patching
             }
             char sep = Path.DirectorySeparatorChar;
             string directory = $"{ModEntry.dllDirectory}{sep}auto{sep}{ModEntry.saveName}{sep}";
-            Directory.Delete(directory, true);
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, true);
+            }
             ModEntry.saveName = string.Empty;
         }
     }

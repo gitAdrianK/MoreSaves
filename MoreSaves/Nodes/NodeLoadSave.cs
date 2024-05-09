@@ -169,10 +169,10 @@ namespace MoreSaves.Nodes
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
             }
-            catch (Exception e)
+            catch
             {
                 contentManager.audio.menu.MenuFail.Play();
-                throw e;
+                return BTresult.Failure;
             }
             finally
             {
