@@ -8,6 +8,7 @@ namespace MoreSaves.Util
 {
     /// <summary>
     /// Custom text button that adds the "Explore" icon to the end of the button.
+    /// Basically just taken from JumpKing.PauseMenu.BT.LinkButton.
     /// </summary>
     public class ExplorerTextButton : TextButton
     {

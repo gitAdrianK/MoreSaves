@@ -56,6 +56,12 @@ namespace MoreSaves.Patching
             );
         }
 
+        // CONSIDER: It could probably improved that instead of copying ALL files out whenever savelube
+        // saves to instead just copy out the files that are being saved. 
+        /// <summary>
+        /// Copies the required save files out from the games Saves and SavesPerma folder into a folder in
+        /// the auto subfolder of the mod dll with the name of the saveName.
+        /// </summary>
         public static void CopySavefile()
         {
             if (ModEntry.saveName == string.Empty)
@@ -65,6 +71,9 @@ namespace MoreSaves.Patching
             CopyUtil.CopyOutSaves("auto", ModEntry.saveName);
         }
 
+        /// <summary>
+        /// Deletes the savefiles in the dll directory when the give up option in selected in game.
+        /// </summary>
         public static void DeleteSaves()
         {
             if (ModEntry.saveName == string.Empty)

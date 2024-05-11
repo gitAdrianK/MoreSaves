@@ -18,7 +18,6 @@ namespace MoreSaves.Nodes
     /// <summary>
     /// Node to load a save from the mod into Jump King.
     /// All required fields will be set and the JK menu will reload/update.
-    /// Force closes the game.
     /// </summary>
     public class NodeLoadSave : IBTnode
     {

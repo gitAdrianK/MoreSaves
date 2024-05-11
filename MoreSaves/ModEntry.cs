@@ -115,7 +115,7 @@ namespace MoreSaves
             {
                 saveName = saveName.Replace(c, '#');
             }
-            saveName = Regex.Replace(saveName, "\\.\\.", ". .");
+            saveName = Regex.Replace(saveName, "^\\.\\.$", ". .");
             saveName = Regex.Replace(saveName, "^[c|C][o|O][n|N]$", $"Save_{saveName}");
             saveName = Regex.Replace(saveName, "^[p|P][r|R][n|N]$", $"Save_{saveName}");
             saveName = Regex.Replace(saveName, "^[a|A][u|U][x|X]$", $"Save_{saveName}");
