@@ -123,5 +123,14 @@ namespace MoreSaves
             saveName = Regex.Replace(saveName, "^[c|C][o|O][m|M]\\d$", $"Save_{saveName}");
             saveName = Regex.Replace(saveName, "^[l|L][p|P][t|T]\\d$", $"Save_{saveName}");
         }
+
+        /// <summary>
+        /// Called by Jump King when the Level Ends
+        /// </summary>
+        [OnLevelEnd]
+        public static void OnLevelEnd()
+        {
+            saveName = string.Empty;
+        }
     }
 }
