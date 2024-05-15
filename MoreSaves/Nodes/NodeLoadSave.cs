@@ -165,7 +165,7 @@ namespace MoreSaves.Nodes
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
 
-                contentManager.audio.menu.Select.Play();
+                // contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
             }
             catch
