@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MoreSaves.Util
 {
-    public class CopyUtil
+    public class SaveUtil
     {
         private static readonly char SEP = Path.DirectorySeparatorChar;
 
@@ -76,6 +76,24 @@ namespace MoreSaves.Util
                     true
                 );
             }
+        }
+
+        /// <summary>
+        /// Deletes the savefiles of the currently loaded map.
+        /// </summary>
+        public static void DeleteSaves()
+        {
+            if (ModEntry.saveName == string.Empty)
+            {
+                return;
+            }
+            char sep = Path.DirectorySeparatorChar;
+            string directory = $"{ModEntry.dllDirectory}{sep}auto{sep}{ModEntry.saveName}{sep}";
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, true);
+            }
+            ModEntry.saveName = string.Empty;
         }
     }
 }

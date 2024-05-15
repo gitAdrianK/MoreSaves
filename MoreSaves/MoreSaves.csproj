@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Patching\EndingManager.cs" />
     <Compile Include="Util\ExplorerTextButton.cs" />
     <Compile Include="Models\ModelLoadOptions.cs" />
     <Compile Include="ModEntry.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="Nodes\NodeOpenFolderExplorer.cs" />
     <Compile Include="Patching\SaveLube.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\CopyUtil.cs" />
+    <Compile Include="Util\SaveUtil.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

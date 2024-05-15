@@ -2,31 +2,44 @@
 using JumpKing.SaveThread;
 using MoreSaves.Util;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace MoreSaves.Patching
 {
     /// <summary>
-    /// Patches the SaveLube class, function SaveCombinedSaveFile to also save at our mod location.
+    /// Patches the SaveLube class. 
+    /// Function SaveCombinedSaveFile to also save at our mod location.
+    /// Function DeleteSaves to also delete the saves inside the auto folder.
     /// </summary>
     public class SaveLube
     {
+        private static readonly Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+
+        private static readonly MethodInfo generic;
+        private static readonly MethodInfo saveCombinedSaveFile;
+        private static readonly HarmonyMethod savePatch;
+
+        private static readonly MethodInfo deleteSave = saveLube.GetMethod("DeleteSaves");
+        private static readonly HarmonyMethod deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+
+        static SaveLube()
+        {
+            saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+
+            generic = saveLube.GetMethod("Save");
+            saveCombinedSaveFile = generic.MakeGenericMethod(typeof(CombinedSaveFile));
+            savePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
+
+            deleteSave = saveLube.GetMethod("DeleteSaves");
+            deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+        }
+
         public SaveLube()
         {
-            Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
-
-            MethodInfo generic = saveLube.GetMethod("Save");
-            MethodInfo saveCombinedSaveFile = generic.MakeGenericMethod(typeof(CombinedSaveFile));
-            HarmonyMethod savePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
-
             ModEntry.harmony.Patch(
                 saveCombinedSaveFile,
                 postfix: savePatch
             );
-
-            MethodInfo deleteSave = saveLube.GetMethod("DeleteSaves");
-            HarmonyMethod deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
 
             ModEntry.harmony.Patch(
                 deleteSave,
@@ -52,7 +65,7 @@ namespace MoreSaves.Patching
             {
                 return;
             }
-            CopyUtil.CopyOutSaves("auto", ModEntry.saveName);
+            SaveUtil.CopyOutSaves("auto", ModEntry.saveName);
         }
 
         /// <summary>
@@ -60,17 +73,7 @@ namespace MoreSaves.Patching
         /// </summary>
         public static void DeleteSaves()
         {
-            if (ModEntry.saveName == string.Empty)
-            {
-                return;
-            }
-            char sep = Path.DirectorySeparatorChar;
-            string directory = $"{ModEntry.dllDirectory}{sep}auto{sep}{ModEntry.saveName}{sep}";
-            if (Directory.Exists(directory))
-            {
-                Directory.Delete(directory, true);
-            }
-            ModEntry.saveName = string.Empty;
+            SaveUtil.DeleteSaves();
         }
     }
 }

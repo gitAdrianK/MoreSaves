@@ -26,6 +26,7 @@ namespace MoreSaves
 
         public static Harmony harmony;
         public static SaveLube saveLube;
+        public static EndingManager endingManager;
 
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
@@ -73,6 +74,7 @@ namespace MoreSaves
 
             harmony = new Harmony("Zebra.MoreSaves");
             saveLube = new SaveLube();
+            endingManager = new EndingManager();
         }
 
         /// <summary>
