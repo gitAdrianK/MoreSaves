@@ -59,8 +59,8 @@ namespace MoreSaves.Nodes
         private static readonly MethodInfo saveProgramStartInitialize;
         private static readonly MethodInfo saveCombinedSaveFile;
 
-        private static readonly object achievementManagerInstance;
-        private static readonly Traverse achievementManagerTraverse;
+        private static readonly Traverse traversePlayerStats;
+        private static readonly Traverse traversePermaStats;
 
         private string directory;
 
@@ -94,8 +94,10 @@ namespace MoreSaves.Nodes
             saveProgramStartInitialize = saveLube.GetMethod("ProgramStartInitialize");
             saveCombinedSaveFile = saveLube.GetMethod("SaveCombinedSaveFile");
 
-            achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            Traverse achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            traversePlayerStats = achievementManagerTraverse.Field("m_snapshot");
+            traversePermaStats = achievementManagerTraverse.Field("m_all_time_stats");
         }
 
         public NodeLoadSave(params string[] folders)
@@ -163,14 +165,16 @@ namespace MoreSaves.Nodes
                 saveCombinedSaveFile.Invoke(null, null);
                 saveProgramStartInitialize.Invoke(null, null);
 
-                achievementManagerTraverse.Field("m_snapshot").SetValue(playerStats);
-                achievementManagerTraverse.Field("m_all_time_stats").SetValue(permaStats);
+                traversePlayerStats.SetValue(playerStats);
+                traversePermaStats.SetValue(permaStats);
 
                 contentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
 
-                // contentManager.audio.menu.Select.Play();
+                contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
+
+                contentManager.audio.music.TitleScreen.Play();
             }
             catch
             {

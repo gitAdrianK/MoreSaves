@@ -31,8 +31,8 @@ namespace MoreSaves.Util
         private static readonly MethodInfo saveFile;
         private static readonly MethodInfo savePlayerStats;
 
-        private static readonly object achievementManagerInstance;
-        private static readonly Traverse achievementManagerTraverse;
+        private static readonly Traverse playerStats;
+        private static readonly Traverse permaStats;
 
         static SaveUtil()
         {
@@ -46,8 +46,10 @@ namespace MoreSaves.Util
             saveFile = encryption.GetMethod("SaveFile");
             savePlayerStats = saveFile.MakeGenericMethod(typeof(PlayerStats));
 
-            achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            Traverse achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            playerStats = achievementManagerTraverse.Field("m_snapshot");
+            permaStats = achievementManagerTraverse.Field("m_all_time_stats");
         }
 
         /// <summary>
@@ -105,12 +107,8 @@ namespace MoreSaves.Util
                 );
             }
 
-            // Stats are not saved to file until after the level is unloaded. Get "live" stats and save manually.
-            PlayerStats playerStats = (PlayerStats)achievementManagerTraverse.Field("m_snapshot").GetValue();
-            PlayerStats permaStats = (PlayerStats)achievementManagerTraverse.Field("m_all_time_stats").GetValue();
-
-            savePlayerStats.Invoke(null, new object[] { $"{intoFolder}{SAVES_PERMA}{SEP}{ModStrings.STATS}", playerStats });
-            savePlayerStats.Invoke(null, new object[] { $"{intoFolder}{SAVES_PERMA}{SEP}{ModStrings.PERMANENT}", permaStats });
+            savePlayerStats.Invoke(null, new object[] { $"{intoFolder}{SAVES_PERMA}{SEP}{ModStrings.STATS}", playerStats.GetValue() });
+            savePlayerStats.Invoke(null, new object[] { $"{intoFolder}{SAVES_PERMA}{SEP}{ModStrings.PERMANENT}", permaStats.GetValue() });
         }
 
         /// <summary>
