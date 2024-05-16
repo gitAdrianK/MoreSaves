@@ -65,7 +65,7 @@ namespace MoreSaves.Patching
             {
                 return;
             }
-            SaveUtil.CopyOutSaves("auto", ModEntry.saveName);
+            SaveUtil.CopyOutSaves(ModStrings.AUTO, ModEntry.saveName);
         }
 
         /// <summary>
@@ -73,7 +73,7 @@ namespace MoreSaves.Patching
         /// </summary>
         public static void DeleteSaves()
         {
-            SaveUtil.DeleteSaves();
+            SaveUtil.DeleteAutoSaves();
         }
     }
 }

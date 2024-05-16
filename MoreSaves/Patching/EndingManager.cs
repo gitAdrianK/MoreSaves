@@ -41,7 +41,7 @@ namespace MoreSaves.Patching
             {
                 return;
             }
-            SaveUtil.DeleteSaves();
+            SaveUtil.DeleteAutoSaves();
         }
     }
 }

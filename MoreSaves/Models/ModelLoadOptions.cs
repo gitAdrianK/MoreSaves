@@ -15,10 +15,13 @@ namespace MoreSaves.Models
 {
     public class ModelLoadOptions
     {
+        private const string AUTO = ModStrings.AUTO;
+        private const string MANUAL = ModStrings.MANUAL;
+
         /// <summary>
         /// Maximum amount of buttons per page.
         /// </summary>
-        private static readonly int AMOUNT = 9;
+        private const int AMOUNT = 9;
 
         /// <summary>
         /// The buttons that a page can hold.
@@ -32,20 +35,20 @@ namespace MoreSaves.Models
         {
             char sep = Path.DirectorySeparatorChar;
             string dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{sep}";
-            string[] autoDirectories = Directory.GetDirectories($"{dllDirectory}auto{sep}");
-            string[] manualDirectories = Directory.GetDirectories($"{dllDirectory}manual{sep}");
+            string[] autoDirectories = Directory.GetDirectories($"{dllDirectory}{AUTO}{sep}");
+            string[] manualDirectories = Directory.GetDirectories($"{dllDirectory}{MANUAL}{sep}");
             SpriteFont menuFontSmall = Game1.instance.contentManager.font.MenuFontSmall;
 
             buttons = new List<TextButton>();
             foreach (string directory in autoDirectories)
             {
                 string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave("auto", dir), menuFontSmall));
+                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave(AUTO, dir), menuFontSmall));
             }
             foreach (string directory in manualDirectories)
             {
                 string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave("manual", dir), menuFontSmall));
+                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave(MANUAL, dir), menuFontSmall));
             }
         }
 

@@ -21,16 +21,18 @@ namespace MoreSaves.Nodes
     /// </summary>
     public class NodeLoadSave : IBTnode
     {
-        private static readonly char SEP = Path.DirectorySeparatorChar;
+        private static readonly char SEP;
 
-        private static readonly string SAVES = "Saves";
-        private static readonly string SAVES_PERMA = "SavesPerma";
-        private static readonly string COMBINED = "combined.sav";
-        private static readonly string EVENT = "event_flags.set";
-        private static readonly string STATS = "attempt_stats.stat";
-        private static readonly string PERMANENT = "perma_player_stats.stat";
-        private static readonly string INVENTORY = "inventory.inv";
-        private static readonly string SETTINGS = "general_settings.set";
+        private const string SAVES = ModStrings.SAVES;
+        private const string SAVES_PERMA = ModStrings.SAVES_PERMA;
+        private const string COMBINED = ModStrings.COMBINED;
+        private const string EVENT = ModStrings.EVENT;
+        private const string STATS = ModStrings.STATS;
+        private const string PERMANENT = ModStrings.PERMANENT;
+        private const string INVENTORY = ModStrings.INVENTORY;
+        private const string SETTINGS = ModStrings.SETTINGS;
+
+        private const string CONTENT = ModStrings.CONTENT;
 
         private static readonly JKContentManager contentManager;
         private static readonly SaveManager saveManager;
@@ -64,6 +66,8 @@ namespace MoreSaves.Nodes
 
         static NodeLoadSave()
         {
+            SEP = Path.DirectorySeparatorChar;
+
             // Classes and methods.
             contentManager = Game1.instance.contentManager;
             saveManager = SaveManager.instance;
@@ -123,7 +127,7 @@ namespace MoreSaves.Nodes
 
                 if (playerStats.steam_level_id == null)
                 {
-                    root = "Content";
+                    root = CONTENT;
                 }
                 else
                 {
@@ -134,7 +138,7 @@ namespace MoreSaves.Nodes
                 // Save and set
                 contentManager.ReinitializeAssets();
 
-                if (root == "Content")
+                if (root == CONTENT)
                 {
                     contentManager.SetLevel(root);
                 }

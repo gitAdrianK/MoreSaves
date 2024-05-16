@@ -21,7 +21,7 @@ namespace MoreSaves.Nodes
             string date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string directoryName = $"{ModEntry.saveName}-{date}";
 
-            SaveUtil.CopyOutSaves("manual", directoryName);
+            SaveUtil.CopyOutSaves(ModStrings.MANUAL, directoryName);
 
             Game1.instance.contentManager.audio.menu.Select.Play();
             return BTresult.Success;

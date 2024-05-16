@@ -16,9 +16,12 @@ using System.Text.RegularExpressions;
 
 namespace MoreSaves
 {
-    [JumpKingMod("Zebra.MoreSaves")]
+    [JumpKingMod(ModStrings.MODNAME)]
     public static class ModEntry
     {
+        private const string AUTO = ModStrings.AUTO;
+        private const string MANUAL = ModStrings.MANUAL;
+
         public static string dllDirectory;
         public static string exeDirectory;
 
@@ -59,20 +62,20 @@ namespace MoreSaves
             dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
             exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";
 
-            if (!Directory.Exists($"{dllDirectory}manual"))
+            if (!Directory.Exists($"{dllDirectory}{MANUAL}"))
             {
-                Directory.CreateDirectory($"{dllDirectory}manual");
+                Directory.CreateDirectory($"{dllDirectory}{MANUAL}");
             }
-            if (!Directory.Exists($"{dllDirectory}auto"))
+            if (!Directory.Exists($"{dllDirectory}{AUTO}"))
             {
-                Directory.CreateDirectory($"{dllDirectory}auto");
+                Directory.CreateDirectory($"{dllDirectory}{AUTO}");
             }
 
             ModelLoadOptions.SetupButtons();
 
             saveName = string.Empty;
 
-            harmony = new Harmony("Zebra.MoreSaves");
+            harmony = new Harmony(ModStrings.MODNAME);
             saveLube = new SaveLube();
             endingManager = new EndingManager();
         }
