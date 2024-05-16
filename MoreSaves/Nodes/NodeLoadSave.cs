@@ -174,7 +174,7 @@ namespace MoreSaves.Nodes
                 contentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
 
-                contentManager.audio.music.TitleScreen.Play();
+                // contentManager.audio.music.TitleScreen.Play();
             }
             catch
             {
