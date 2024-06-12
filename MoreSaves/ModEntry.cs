@@ -10,6 +10,7 @@ using MoreSaves.Models;
 using MoreSaves.Nodes;
 using MoreSaves.Patching;
 using MoreSaves.Util;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -57,7 +58,7 @@ namespace MoreSaves
         [BeforeLevelLoad]
         public static void BeforeLevelLoad()
         {
-            // Debugger.Launch();
+            Debugger.Launch();
 
             dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
             exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";

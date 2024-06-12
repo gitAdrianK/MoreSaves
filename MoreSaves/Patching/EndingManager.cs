@@ -11,14 +11,12 @@ namespace MoreSaves.Patching
     /// </summary>
     public class EndingManager
     {
-        private static readonly Type endingManager;
-
         private static readonly MethodInfo checkWin;
         private static readonly HarmonyMethod deleteSaves;
 
         static EndingManager()
         {
-            endingManager = AccessTools.TypeByName("JumpKing.GameManager.MultiEnding.EndingManager");
+            Type endingManager = AccessTools.TypeByName("JumpKing.GameManager.MultiEnding.EndingManager");
 
             checkWin = endingManager.GetMethod("CheckWin");
             deleteSaves = new HarmonyMethod(AccessTools.Method(typeof(EndingManager), nameof(DeleteSaves)));

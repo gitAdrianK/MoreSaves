@@ -13,20 +13,17 @@ namespace MoreSaves.Patching
     /// </summary>
     public class SaveLube
     {
-        private static readonly Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
-
-        private static readonly MethodInfo generic;
         private static readonly MethodInfo saveCombinedSaveFile;
         private static readonly HarmonyMethod savePatch;
 
-        private static readonly MethodInfo deleteSave = saveLube.GetMethod("DeleteSaves");
-        private static readonly HarmonyMethod deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+        private static readonly MethodInfo deleteSave;
+        private static readonly HarmonyMethod deletePatch;
 
         static SaveLube()
         {
-            saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+            Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
 
-            generic = saveLube.GetMethod("Save");
+            MethodInfo generic = saveLube.GetMethod("Save");
             saveCombinedSaveFile = generic.MakeGenericMethod(typeof(CombinedSaveFile));
             savePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
 

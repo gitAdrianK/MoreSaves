@@ -37,11 +37,6 @@ namespace MoreSaves.Nodes
         private static readonly JKContentManager contentManager;
         private static readonly SaveManager saveManager;
 
-        private static readonly Type saveLube;
-        private static readonly Type encryption;
-        private static readonly Type achievementManager;
-        private static readonly Type skinManager;
-
         private static readonly MethodInfo setCombinedSave;
         private static readonly MethodInfo setPlayerStats;
         private static readonly MethodInfo setPermanentStats;
@@ -50,7 +45,6 @@ namespace MoreSaves.Nodes
 
         private static readonly MethodInfo setSkinEnabled;
 
-        private static readonly MethodInfo loadFile;
         private static readonly MethodInfo loadCombinedSaveFile;
         private static readonly MethodInfo loadEventFlags;
         private static readonly MethodInfo loadPlayerStats;
@@ -72,10 +66,10 @@ namespace MoreSaves.Nodes
             contentManager = Game1.instance.contentManager;
             saveManager = SaveManager.instance;
 
-            saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
-            encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
-            achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
-            skinManager = AccessTools.TypeByName("JumpKing.Player.Skins.SkinManager");
+            Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+            Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
+            Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+            Type skinManager = AccessTools.TypeByName("JumpKing.Player.Skins.SkinManager");
 
             setCombinedSave = saveLube.GetMethod("set_CombinedSave");
             setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
@@ -85,7 +79,7 @@ namespace MoreSaves.Nodes
 
             setSkinEnabled = skinManager.GetMethod("SetSkinEnabled");
 
-            loadFile = encryption.GetMethod("LoadFile");
+            MethodInfo loadFile = encryption.GetMethod("LoadFile");
             loadCombinedSaveFile = loadFile.MakeGenericMethod(typeof(CombinedSaveFile));
             loadEventFlags = loadFile.MakeGenericMethod(typeof(EventFlagsSave));
             loadPlayerStats = loadFile.MakeGenericMethod(typeof(PlayerStats));
