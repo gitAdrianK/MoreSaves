@@ -10,7 +10,6 @@ using MoreSaves.Models;
 using MoreSaves.Nodes;
 using MoreSaves.Patching;
 using MoreSaves.Util;
-using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -58,7 +57,7 @@ namespace MoreSaves
         [BeforeLevelLoad]
         public static void BeforeLevelLoad()
         {
-            Debugger.Launch();
+            //Debugger.Launch();
 
             dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
             exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";
@@ -90,7 +89,15 @@ namespace MoreSaves
             JKContentManager contentManager = Game1.instance.contentManager;
             if (contentManager.level != null)
             {
-                saveName = contentManager.level.Name;
+                if (contentManager.level.Name != null)
+                {
+                    saveName = contentManager.level.Name;
+                }
+                else
+                {
+                    saveName = "Debug";
+                }
+
             }
             else
             {
