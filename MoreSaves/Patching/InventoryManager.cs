@@ -17,6 +17,11 @@ namespace MoreSaves.Patching
             inventory = Traverse.Create(inventoryManager).Property("inventory");
         }
 
+        public static void SetInventory(Inventory inv)
+        {
+            inventory.SetValue(inv);
+        }
+
         public static Inventory GetInventory()
         {
             return inventory.GetValue<Inventory>();
