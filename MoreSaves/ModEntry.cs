@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework;
 using MoreSaves.Models;
 using MoreSaves.Nodes;
 using MoreSaves.Patching;
-using MoreSaves.Util;
 using System.IO;
 using System.Reflection;
 using System.Text.RegularExpressions;
@@ -19,6 +18,8 @@ namespace MoreSaves
     [JumpKingMod(ModStrings.MODNAME)]
     public static class ModEntry
     {
+        private static readonly char SEP;
+
         private const string AUTO = ModStrings.AUTO;
         private const string MANUAL = ModStrings.MANUAL;
 
@@ -28,8 +29,10 @@ namespace MoreSaves
         public static string saveName;
 
         public static Harmony harmony;
-        public static SaveLube saveLube;
+
         public static EndingManager endingManager;
+        public static SaveHelper saveHelper;
+        public static SaveLube saveLube;
 
         [MainMenuItemSetting]
         public static TextButton LoadSavefile(object factory, GuiFormat format)
@@ -49,6 +52,11 @@ namespace MoreSaves
         public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
         {
             return new ExplorerTextButton("Open Saves Folder", new NodeOpenFolderExplorer(), Color.Lime);
+        }
+
+        static ModEntry()
+        {
+            SEP = Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -76,8 +84,10 @@ namespace MoreSaves
             saveName = string.Empty;
 
             harmony = new Harmony(ModStrings.MODNAME);
-            saveLube = new SaveLube();
+
             endingManager = new EndingManager();
+            saveHelper = new SaveHelper();
+            saveLube = new SaveLube();
         }
 
         /// <summary>
@@ -86,55 +96,13 @@ namespace MoreSaves
         [OnLevelStart]
         public static void OnLevelStart()
         {
-            JKContentManager contentManager = Game1.instance.contentManager;
-            if (contentManager.level != null)
-            {
-                if (contentManager.level.Name != null)
-                {
-                    saveName = contentManager.level.Name;
-                }
-                else
-                {
-                    saveName = "Debug";
-                }
+            saveName = SanitizeName(GetSaveName());
 
-            }
-            else
-            {
-                if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedNBP))
-                {
-                    saveName = language.GAMETITLESCREEN_NEW_BABE_PLUS;
-                }
-                else if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedGhost))
-                {
-                    saveName = language.GAMETITLESCREEN_GHOST_OF_THE_BABE;
-                }
-                else
-                {
-                    saveName = language.GAMETITLESCREEN_NEW_GAME;
-                }
-            }
-
-            saveName = saveName.Trim();
-            if (saveName == string.Empty)
-            {
-                saveName = "Save_emptyName";
-            }
-            foreach (char c in Path.GetInvalidFileNameChars())
-            {
-                saveName = saveName.Replace(c, '#');
-            }
-            foreach (char c in Path.GetInvalidPathChars())
-            {
-                saveName = saveName.Replace(c, '#');
-            }
-            saveName = Regex.Replace(saveName, "^\\.\\.$", ". .");
-            saveName = Regex.Replace(saveName, "^[c|C][o|O][n|N]$", $"Save_{saveName}");
-            saveName = Regex.Replace(saveName, "^[p|P][r|R][n|N]$", $"Save_{saveName}");
-            saveName = Regex.Replace(saveName, "^[a|A][u|U][x|X]$", $"Save_{saveName}");
-            saveName = Regex.Replace(saveName, "^[n|N][u|U][l|L]$", $"Save_{saveName}");
-            saveName = Regex.Replace(saveName, "^[c|C][o|O][m|M]\\d$", $"Save_{saveName}");
-            saveName = Regex.Replace(saveName, "^[l|L][p|P][t|T]\\d$", $"Save_{saveName}");
+            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
+            Encryption.SaveInventory(InventoryManager.GetInventory(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
+            Encryption.SaveEventFlags(EventFlagsSave.Save, AUTO, saveName, ModStrings.SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, AUTO, saveName, ModStrings.SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, AUTO, saveName, ModStrings.SAVES_PERMA);
         }
 
         /// <summary>
@@ -144,6 +112,57 @@ namespace MoreSaves
         public static void OnLevelEnd()
         {
             saveName = string.Empty;
+        }
+
+        private static string GetSaveName()
+        {
+            JKContentManager contentManager = Game1.instance.contentManager;
+            if (contentManager == null)
+            {
+                // The contentManager doesn't exist when started through WS
+                return "Debug";
+            }
+
+            if (contentManager.level != null)
+            {
+                return contentManager.level.Name;
+            }
+
+            if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedNBP))
+            {
+                return language.GAMETITLESCREEN_NEW_BABE_PLUS;
+            }
+            if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedGhost))
+            {
+                return language.GAMETITLESCREEN_GHOST_OF_THE_BABE;
+            }
+            return language.GAMETITLESCREEN_NEW_GAME;
+        }
+
+        private static string SanitizeName(string name)
+        {
+            name = name.Trim();
+            if (name == string.Empty)
+            {
+                name = "Save_emptyName";
+            }
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                name = name.Replace(c, '#');
+            }
+            foreach (char c in Path.GetInvalidPathChars())
+            {
+                name = name.Replace(c, '#');
+            }
+            name = Regex.Replace(name, "^\\.\\.$", ". .");
+            name = Regex.Replace(name, "^[c|C][o|O][n|N]$", $"Save_{name}");
+            name = Regex.Replace(name, "^[p|P][r|R][n|N]$", $"Save_{name}");
+            name = Regex.Replace(name, "^[a|A][u|U][x|X]$", $"Save_{name}");
+            name = Regex.Replace(name, "^[n|N][u|U][l|L]$", $"Save_{name}");
+            name = Regex.Replace(name, "^[c|C][o|O][m|M]\\d$", $"Save_{name}");
+            name = Regex.Replace(name, "^[l|L][p|P][t|T]\\d$", $"Save_{name}");
+
+            return name;
         }
     }
 }

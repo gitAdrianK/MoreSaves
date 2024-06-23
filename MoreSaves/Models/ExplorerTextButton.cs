@@ -4,7 +4,7 @@ using JumpKing.PauseMenu.BT;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MoreSaves.Util
+namespace MoreSaves.Models
 {
     /// <summary>
     /// Custom text button that adds the "Explore" icon to the end of the button.

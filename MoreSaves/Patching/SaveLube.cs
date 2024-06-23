@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using JumpKing.SaveThread;
-using MoreSaves.Util;
 using System;
+using System.IO;
 using System.Reflection;
 
 namespace MoreSaves.Patching
@@ -13,56 +13,57 @@ namespace MoreSaves.Patching
     /// </summary>
     public class SaveLube
     {
+        private static readonly char SEP;
+
+        private static readonly Traverse combinedSavefile;
+        private static readonly Traverse generalSettings;
+
         private static readonly MethodInfo saveCombinedSaveFile;
-        private static readonly HarmonyMethod savePatch;
+        private static readonly HarmonyMethod saveCombinedPatch;
 
         private static readonly MethodInfo deleteSave;
         private static readonly HarmonyMethod deletePatch;
 
         static SaveLube()
         {
+            SEP = Path.DirectorySeparatorChar;
+
             Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
 
-            MethodInfo generic = saveLube.GetMethod("Save");
-            saveCombinedSaveFile = generic.MakeGenericMethod(typeof(CombinedSaveFile));
-            savePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(CopySavefile)));
+            combinedSavefile = Traverse.Create(saveLube).Property("CombinedSave");
+            generalSettings = Traverse.Create(saveLube).Property("generalSettings");
+
+            MethodInfo genericSave = saveLube.GetMethod("Save");
+            saveCombinedSaveFile = genericSave.MakeGenericMethod(typeof(CombinedSaveFile));
+            saveCombinedPatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(SaveCombinedSaveFile)));
 
             deleteSave = saveLube.GetMethod("DeleteSaves");
-            deletePatch = new HarmonyMethod(AccessTools.Method(typeof(SaveLube), nameof(DeleteSaves)));
+            deletePatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(DeleteSaves)));
         }
 
         public SaveLube()
         {
-            ModEntry.harmony.Patch(
+            Harmony harmony = ModEntry.harmony;
+
+            harmony.Patch(
                 saveCombinedSaveFile,
-                postfix: savePatch
+                postfix: saveCombinedPatch
             );
 
-            ModEntry.harmony.Patch(
+            harmony.Patch(
                 deleteSave,
                 postfix: deletePatch
             );
         }
 
-        // CONSIDER: It could probably improved that instead of copying ALL files out whenever savelube
-        // saves to instead just copy out the files that are being saved.
-
-        // Problem with this is that certain files are created/saved before the level has loaded, so the saveName is unset.
-        // Collecting an item which one would assume saves inventory,
-        // instead throws "NotImplementedExceptions". So for now we'll leave it at this.
-        // However combined is saved constantly so lets not patch all.
-
-        /// <summary>
-        /// Copies the required save files out from the games Saves and SavesPerma folder into a folder in
-        /// the auto subfolder of the mod dll with the name of the saveName.
-        /// </summary>
-        public static void CopySavefile()
+        public static void SaveCombinedSaveFile(CombinedSaveFile p_object)
         {
             if (ModEntry.saveName == string.Empty)
             {
                 return;
             }
-            SaveUtil.CopyOutSaves(ModStrings.AUTO, ModEntry.saveName);
+            Encryption.SaveCombinedSaveFile(p_object, ModStrings.AUTO, ModEntry.saveName, ModStrings.SAVES);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, ModStrings.AUTO, ModEntry.saveName, ModStrings.SAVES_PERMA);
         }
 
         /// <summary>
@@ -70,7 +71,26 @@ namespace MoreSaves.Patching
         /// </summary>
         public static void DeleteSaves()
         {
-            SaveUtil.DeleteAutoSaves();
+            if (ModEntry.saveName == string.Empty)
+            {
+                return;
+            }
+            string directory = $"{ModEntry.dllDirectory}{SEP}{ModStrings.AUTO}{SEP}{ModEntry.saveName}{SEP}";
+            if (Directory.Exists(directory))
+            {
+                Directory.Delete(directory, true);
+            }
+            ModEntry.saveName = string.Empty;
+        }
+
+        public static CombinedSaveFile GetCombinedSaveFile()
+        {
+            return combinedSavefile.GetValue<CombinedSaveFile>();
+        }
+
+        public static GeneralSettings GetGeneralSettings()
+        {
+            return generalSettings.GetValue<GeneralSettings>();
         }
     }
 }

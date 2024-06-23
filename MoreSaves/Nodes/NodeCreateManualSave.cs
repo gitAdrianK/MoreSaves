@@ -1,6 +1,7 @@
 ﻿using BehaviorTree;
 using JumpKing;
-using MoreSaves.Util;
+using JumpKing.SaveThread;
+using MoreSaves.Patching;
 using System;
 
 namespace MoreSaves.Nodes
@@ -10,6 +11,11 @@ namespace MoreSaves.Nodes
     /// </summary>
     public class NodeCreateManualSave : IBTnode
     {
+
+        const string MANUAL = ModStrings.MANUAL;
+        const string SAVES = ModStrings.SAVES;
+        const string SAVES_PERMA = ModStrings.SAVES_PERMA;
+
         protected override BTresult MyRun(TickData p_data)
         {
             if (ModEntry.saveName == string.Empty)
@@ -21,7 +27,11 @@ namespace MoreSaves.Nodes
             string date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string directoryName = $"{ModEntry.saveName}-{date}";
 
-            SaveUtil.CopyOutSaves(ModStrings.MANUAL, directoryName);
+            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            Encryption.SaveInventory(InventoryManager.GetInventory(), MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            Encryption.SaveEventFlags(EventFlagsSave.Save, MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, MANUAL, directoryName, ModStrings.SAVES_PERMA);
 
             Game1.instance.contentManager.audio.menu.Select.Play();
             return BTresult.Success;

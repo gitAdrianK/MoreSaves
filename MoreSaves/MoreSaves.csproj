@@ -74,16 +74,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModStrings.cs" />
+    <Compile Include="Patching\AchievementManager.cs" />
+    <Compile Include="Patching\Encryption.cs" />
     <Compile Include="Patching\EndingManager.cs" />
-    <Compile Include="Util\ExplorerTextButton.cs" />
+    <Compile Include="Models\ExplorerTextButton.cs" />
     <Compile Include="Models\ModelLoadOptions.cs" />
     <Compile Include="ModEntry.cs" />
     <Compile Include="Nodes\NodeCreateManualSave.cs" />
     <Compile Include="Nodes\NodeLoadSave.cs" />
     <Compile Include="Nodes\NodeOpenFolderExplorer.cs" />
+    <Compile Include="Patching\InventoryManager.cs" />
+    <Compile Include="Patching\SaveHelper.cs" />
     <Compile Include="Patching\SaveLube.cs" />
+    <Compile Include="Patching\XmlWrapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Util\SaveUtil.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
