@@ -147,7 +147,7 @@ namespace MoreSaves.Nodes
                 setPlayerStats.Invoke(null, new object[] { playerStats });
                 setPermanentStats.Invoke(null, new object[] { permaStats });
                 setInventory.Invoke(null, new object[] { inventory });
-                //Patching.InventoryManager.SetInventory(inventory);
+                Patching.InventoryManager.SetInventory(inventory);
                 setGeneralSettings.Invoke(null, new object[] { generalSettings });
                 EventFlagsSave.Save = eventFlags;
 
