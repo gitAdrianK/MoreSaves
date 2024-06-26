@@ -15,6 +15,12 @@ namespace MoreSaves.Models
 {
     public class ModelLoadOptions
     {
+        public enum PageOption
+        {
+            Auto,
+            Manual,
+        }
+
         private const string AUTO = ModStrings.AUTO;
         private const string MANUAL = ModStrings.MANUAL;
 
@@ -24,9 +30,14 @@ namespace MoreSaves.Models
         private const int AMOUNT = 9;
 
         /// <summary>
-        /// The buttons that a page can hold.
+        /// The buttons that the auto page can hold.
         /// </summary>
-        private static List<TextButton> buttons;
+        private static List<TextButton> autoButtons;
+
+        /// <summary>
+        /// The buttons that the manual page can hold.
+        /// </summary>
+        private static List<TextButton> manualButtons;
 
         /// <summary>
         /// Reads the auto and manual directories and creates a button for each folder found inside.
@@ -39,16 +50,17 @@ namespace MoreSaves.Models
             string[] manualDirectories = Directory.GetDirectories($"{dllDirectory}{MANUAL}{sep}");
             SpriteFont menuFontSmall = Game1.instance.contentManager.font.MenuFontSmall;
 
-            buttons = new List<TextButton>();
+            autoButtons = new List<TextButton>();
             foreach (string directory in autoDirectories)
             {
                 string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave(AUTO, dir), menuFontSmall));
+                autoButtons.Add(new TextButton(CropName(dir), new NodeLoadSave(AUTO, dir), menuFontSmall));
             }
+            manualButtons = new List<TextButton>();
             foreach (string directory in manualDirectories)
             {
                 string dir = directory.Split(sep).Last();
-                buttons.Add(new TextButton(CropName(dir), new NodeLoadSave(MANUAL, dir), menuFontSmall));
+                manualButtons.Add(new TextButton(CropName(dir), new NodeLoadSave(MANUAL, dir), menuFontSmall));
             }
         }
 
@@ -67,8 +79,22 @@ namespace MoreSaves.Models
             return name;
         }
 
-        public static MenuSelectorClosePopup CreateLoadOptions(object factory, GuiFormat format, int page)
+        public static MenuSelectorClosePopup CreateLoadOptions(object factory, GuiFormat format, int page, PageOption pageOption)
         {
+            List<TextButton> buttons;
+            switch (pageOption)
+            {
+                case PageOption.Auto:
+                    buttons = autoButtons;
+                    break;
+                case PageOption.Manual:
+                    buttons = manualButtons;
+                    break;
+                default:
+                    buttons = new List<TextButton>();
+                    break;
+            }
+
             if (buttons.Count() == 0)
             {
                 MenuSelectorClosePopup emptySelector = new MenuSelectorClosePopup(format);
@@ -106,7 +132,7 @@ namespace MoreSaves.Models
             }
             if (page * AMOUNT + num < buttons.Count)
             {
-                menuSelector.AddChild(new TextButton(language.PAGINATION_NEXT, CreateLoadOptions(factory, format, page + 1)));
+                menuSelector.AddChild(new TextButton(language.PAGINATION_NEXT, CreateLoadOptions(factory, format, page + 1, pageOption)));
             }
 
             menuSelector.Initialize();

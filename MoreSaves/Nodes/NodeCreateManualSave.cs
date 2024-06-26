@@ -32,6 +32,7 @@ namespace MoreSaves.Nodes
             Encryption.SaveEventFlags(EventFlagsSave.Save, MANUAL, directoryName, ModStrings.SAVES_PERMA);
             Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, MANUAL, directoryName, ModStrings.SAVES_PERMA);
             Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            Encryption.SaveCombinedSaveFile(SaveLube.GetCombinedSaveFile(), MANUAL, directoryName, ModStrings.SAVES);
 
             Game1.instance.contentManager.audio.menu.Select.Play();
             return BTresult.Success;

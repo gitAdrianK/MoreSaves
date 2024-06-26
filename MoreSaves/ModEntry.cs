@@ -35,10 +35,19 @@ namespace MoreSaves
         public static SaveLube saveLube;
 
         [MainMenuItemSetting]
-        public static TextButton LoadSavefile(object factory, GuiFormat format)
+        public static TextButton LoadAutoSavefile(object factory, GuiFormat format)
         {
             ModelLoadOptions.SetupButtons();
-            return new TextButton("Load", ModelLoadOptions.CreateLoadOptions(factory, format, 0));
+            return new TextButton("Load Automatic Save",
+                ModelLoadOptions.CreateLoadOptions(factory, format, 0, ModelLoadOptions.PageOption.Auto));
+        }
+
+        [MainMenuItemSetting]
+        public static TextButton LoadManualSavefile(object factory, GuiFormat format)
+        {
+            ModelLoadOptions.SetupButtons();
+            return new TextButton("Load Manual Save",
+                ModelLoadOptions.CreateLoadOptions(factory, format, 0, ModelLoadOptions.PageOption.Manual));
         }
 
         [PauseMenuItemSetting]
