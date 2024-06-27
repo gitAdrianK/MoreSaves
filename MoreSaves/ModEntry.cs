@@ -128,10 +128,12 @@ namespace MoreSaves
             JKContentManager contentManager = Game1.instance.contentManager;
             if (contentManager == null)
             {
-                // The contentManager doesn't exist when started through WS
                 return "Debug";
             }
 
+            // The content manager is there when started through WS, its that the steam library tries to
+            // get the name of a null value (details), there is nothing I can do about it.
+            // Sorry to whoever is starting this mod with the Debugger enabled.
             if (contentManager.level != null)
             {
                 return contentManager.level.Name;
