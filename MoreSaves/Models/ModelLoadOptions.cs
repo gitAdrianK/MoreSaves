@@ -65,16 +65,16 @@ namespace MoreSaves.Models
         }
 
         /// <summary>
-        /// Crops the name should it be longer than 30 characters as it would cause an overflow.
-        /// The name will be cropped at 27 characters and "..." will be inserted at the front to indicate the name having been cropped.
+        /// Crops the name should it be longer than 60 characters as it would cause an overflow.
+        /// The name will be cropped at 57 characters and "..." will be inserted at the front to indicate the name having been cropped.
         /// </summary>
         /// <param name="name">The name to be cropped</param>
         /// <returns>The cropped name</returns>
         private static string CropName(string name)
         {
-            if (name.Length > 30)
+            if (name.Length > 60)
             {
-                name = $"...{name.Substring(name.Length - 27)}";
+                name = $"...{name.Substring(name.Length - 57)}";
             }
             return name;
         }
@@ -103,10 +103,12 @@ namespace MoreSaves.Models
                 return emptySelector;
             }
 
-            var _this = Traverse.Create(factory);
-            var gui_left = _this.Field("CONTROLS_GUI_FORMAT_LEFT").GetValue<GuiFormat>();
+            var menuFactory = Traverse.Create(factory);
+            var guiFormat = menuFactory.Field("GUI_FORMAT").GetValue<GuiFormat>();
+            GuiFormat customFormat = guiFormat;
+            customFormat.anchor = Vector2.Zero;
 
-            MenuSelectorClosePopup menuSelector = new MenuSelectorClosePopup(gui_left);
+            MenuSelectorClosePopup menuSelector = new MenuSelectorClosePopup(customFormat);
 
             menuSelector.AddChild(new TextInfo("Load Save!", Color.White));
 
