@@ -28,12 +28,6 @@ namespace MoreSaves
 
         public static string saveName;
 
-        public static Harmony harmony;
-
-        public static EndingManager endingManager;
-        public static SaveHelper saveHelper;
-        public static SaveLube saveLube;
-
         [MainMenuItemSetting]
         public static TextButton LoadAutoSavefile(object factory, GuiFormat format)
         {
@@ -92,11 +86,10 @@ namespace MoreSaves
 
             saveName = string.Empty;
 
-            harmony = new Harmony(ModStrings.MODNAME);
-
-            endingManager = new EndingManager();
-            saveHelper = new SaveHelper();
-            saveLube = new SaveLube();
+            Harmony harmony = new Harmony(ModStrings.MODNAME);
+            new EndingManager(harmony);
+            new SaveHelper(harmony);
+            new SaveLube(harmony);
         }
 
         /// <summary>

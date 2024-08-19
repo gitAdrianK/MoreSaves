@@ -39,10 +39,8 @@ namespace MoreSaves.Patching
             saveInventoryPatch = new HarmonyMethod(AccessTools.Method(typeof(SaveHelper), nameof(SaveInventory)));
         }
 
-        public SaveHelper()
+        public SaveHelper(Harmony harmony)
         {
-            Harmony harmony = ModEntry.harmony;
-
             harmony.Patch(
                 saveGeneralSettings,
                 postfix: saveGeneralSettingsPatch);

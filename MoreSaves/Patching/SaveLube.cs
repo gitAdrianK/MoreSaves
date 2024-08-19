@@ -41,10 +41,8 @@ namespace MoreSaves.Patching
             deletePatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(DeleteSaves)));
         }
 
-        public SaveLube()
+        public SaveLube(Harmony harmony)
         {
-            Harmony harmony = ModEntry.harmony;
-
             harmony.Patch(
                 saveCombinedSaveFile,
                 postfix: saveCombinedPatch

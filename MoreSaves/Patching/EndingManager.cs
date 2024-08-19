@@ -26,9 +26,9 @@ namespace MoreSaves.Patching
             deleteSaves = new HarmonyMethod(AccessTools.Method(typeof(EndingManager), nameof(DeleteSaves)));
         }
 
-        public EndingManager()
+        public EndingManager(Harmony harmony)
         {
-            ModEntry.harmony.Patch(
+            harmony.Patch(
                 checkWin,
                 postfix: deleteSaves);
         }
