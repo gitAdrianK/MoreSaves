@@ -18,8 +18,6 @@ namespace MoreSaves
     [JumpKingMod(ModStrings.MODNAME)]
     public static class ModEntry
     {
-        private static readonly char SEP;
-
         private const string AUTO = ModStrings.AUTO;
         private const string MANUAL = ModStrings.MANUAL;
 
@@ -55,11 +53,6 @@ namespace MoreSaves
         public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
         {
             return new ExplorerTextButton("Open Saves Folder", new NodeOpenFolderExplorer(), Color.Lime);
-        }
-
-        static ModEntry()
-        {
-            SEP = Path.DirectorySeparatorChar;
         }
 
         /// <summary>
@@ -98,6 +91,11 @@ namespace MoreSaves
         [OnLevelStart]
         public static void OnLevelStart()
         {
+            if (LevelDebugState.instance != null)
+            {
+                return;
+            }
+
             saveName = SanitizeName(GetSaveName());
 
             XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
@@ -124,9 +122,7 @@ namespace MoreSaves
                 return "Debug";
             }
 
-            // The content manager is there when started through WS, its that the steam library tries to
-            // get the name of a null value (details), there is nothing I can do about it.
-            // Sorry to whoever is starting this mod with the Debugger enabled.
+            // I could do something about it
             if (contentManager.level != null)
             {
                 return contentManager.level.Name;
