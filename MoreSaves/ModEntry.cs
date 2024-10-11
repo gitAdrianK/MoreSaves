@@ -25,6 +25,7 @@ namespace MoreSaves
         public static string exeDirectory;
 
         public static string saveName;
+        public static bool isVictory;
 
         [MainMenuItemSetting]
         public static TextButton LoadAutoSavefile(object factory, GuiFormat format)
@@ -80,7 +81,7 @@ namespace MoreSaves
             saveName = string.Empty;
 
             Harmony harmony = new Harmony(ModStrings.MODNAME);
-            // new EndingManager(harmony);
+            new EndingManager(harmony);
             new SaveHelper(harmony);
             new SaveLube(harmony);
         }
@@ -97,6 +98,7 @@ namespace MoreSaves
             }
 
             saveName = SanitizeName(GetSaveName());
+            isVictory = false;
 
             XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
             Encryption.SaveInventory(InventoryManager.GetInventory(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
@@ -111,7 +113,10 @@ namespace MoreSaves
         [OnLevelEnd]
         public static void OnLevelEnd()
         {
-            saveName = string.Empty;
+            if (!isVictory)
+            {
+                saveName = string.Empty;
+            }
         }
 
         private static string GetSaveName()

@@ -23,7 +23,7 @@ namespace MoreSaves.Patching
             Type endingManager = AccessTools.TypeByName("JumpKing.GameManager.MultiEnding.EndingManager");
 
             checkWin = endingManager.GetMethod("CheckWin");
-            deleteSaves = new HarmonyMethod(AccessTools.Method(typeof(EndingManager), nameof(DeleteSaves)));
+            deleteSaves = new HarmonyMethod(AccessTools.Method(typeof(EndingManager), nameof(IsVictory)));
         }
 
         public EndingManager(Harmony harmony)
@@ -34,20 +34,15 @@ namespace MoreSaves.Patching
         }
 
         /// <summary>
-        /// Deletes the savefiles in the dll directory when the ending is achieved.
+        /// Notes that a victory has happened.
         /// </summary>
-        public static void DeleteSaves(bool __result)
+        public static void IsVictory(bool __result)
         {
             if (!__result || ModEntry.saveName == string.Empty)
             {
                 return;
             }
-            string directory = $"{ModEntry.dllDirectory}{SEP}{ModStrings.AUTO}{SEP}{ModEntry.saveName}{SEP}";
-            if (Directory.Exists(directory))
-            {
-                Directory.Delete(directory, true);
-            }
-            ModEntry.saveName = string.Empty;
+            ModEntry.isVictory = true;
         }
     }
 }
