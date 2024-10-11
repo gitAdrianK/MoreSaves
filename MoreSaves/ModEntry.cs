@@ -80,7 +80,7 @@ namespace MoreSaves
             saveName = string.Empty;
 
             Harmony harmony = new Harmony(ModStrings.MODNAME);
-            new EndingManager(harmony);
+            // new EndingManager(harmony);
             new SaveHelper(harmony);
             new SaveLube(harmony);
         }
