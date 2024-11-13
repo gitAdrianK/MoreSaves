@@ -20,6 +20,7 @@ namespace MoreSaves
     {
         private const string AUTO = ModStrings.AUTO;
         private const string MANUAL = ModStrings.MANUAL;
+        private const string SAVES_PERMA = ModStrings.SAVES_PERMA;
 
         public static string dllDirectory;
         public static string exeDirectory;
@@ -100,11 +101,11 @@ namespace MoreSaves
             saveName = SanitizeName(GetSaveName());
             isVictory = false;
 
-            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
-            Encryption.SaveInventory(InventoryManager.GetInventory(), ModStrings.AUTO, saveName, ModStrings.SAVES_PERMA);
-            Encryption.SaveEventFlags(EventFlagsSave.Save, AUTO, saveName, ModStrings.SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, AUTO, saveName, ModStrings.SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, AUTO, saveName, ModStrings.SAVES_PERMA);
+            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), AUTO, saveName, SAVES_PERMA);
+            Encryption.SaveInventory(InventoryManager.GetInventory(), AUTO, saveName, SAVES_PERMA);
+            Encryption.SaveEventFlags(EventFlagsSave.Save, AUTO, saveName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, AUTO, saveName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, AUTO, saveName, SAVES_PERMA);
         }
 
         /// <summary>
@@ -113,26 +114,32 @@ namespace MoreSaves
         [OnLevelEnd]
         public static void OnLevelEnd()
         {
+            // There is something weird going on. For now lets go back to how it was before.
+            saveName = string.Empty;
+            /*
             if (!isVictory)
             {
                 saveName = string.Empty;
             }
+            */
         }
 
         private static string GetSaveName()
         {
             JKContentManager contentManager = Game1.instance.contentManager;
+            // This should never happen
             if (contentManager == null)
             {
                 return "Debug";
             }
 
-            // I could do something about it
+            // Not a vanilla map
             if (contentManager.level != null)
             {
                 return contentManager.level.Name;
             }
 
+            // Which vanilla map
             if (EventFlagsSave.ContainsFlag(StoryEventFlags.StartedNBP))
             {
                 return language.GAMETITLESCREEN_NEW_BABE_PLUS;

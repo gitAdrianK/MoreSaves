@@ -78,7 +78,7 @@ namespace MoreSaves.Patching
         }
 
         /// <summary>
-        /// Builds a path from given folders, starting from the path to the dll. If the path doesn't exists creates it.
+        /// Builds a path from given folders, starting from the path to the dll. If the path doesn't exist creates it.
         /// </summary>
         /// <param name="folders">The folders making up the path to the save, starting from the path to the dll</param>
         /// <returns>The path</returns>
