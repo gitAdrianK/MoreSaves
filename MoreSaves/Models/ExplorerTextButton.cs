@@ -12,9 +12,9 @@ namespace MoreSaves.Models
     /// </summary>
     public class ExplorerTextButton : TextButton
     {
-        private SpriteFont font;
-        private string text;
-        private Color color;
+        private readonly SpriteFont font;
+        private readonly string text;
+        private readonly Color color;
 
         public ExplorerTextButton(string text, IBTnode child, Color color) : base(text, child, color)
         {

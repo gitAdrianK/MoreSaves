@@ -13,7 +13,6 @@ namespace MoreSaves.Nodes
     {
 
         const string MANUAL = ModStrings.MANUAL;
-        const string SAVES = ModStrings.SAVES;
         const string SAVES_PERMA = ModStrings.SAVES_PERMA;
 
         protected override BTresult MyRun(TickData p_data)
@@ -27,11 +26,11 @@ namespace MoreSaves.Nodes
             string date = DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss");
             string directoryName = $"{ModEntry.saveName}-{date}";
 
-            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), MANUAL, directoryName, ModStrings.SAVES_PERMA);
-            Encryption.SaveInventory(InventoryManager.GetInventory(), MANUAL, directoryName, ModStrings.SAVES_PERMA);
-            Encryption.SaveEventFlags(EventFlagsSave.Save, MANUAL, directoryName, ModStrings.SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, MANUAL, directoryName, ModStrings.SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, MANUAL, directoryName, ModStrings.SAVES_PERMA);
+            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), MANUAL, directoryName, SAVES_PERMA);
+            Encryption.SaveInventory(InventoryManager.GetInventory(), MANUAL, directoryName, SAVES_PERMA);
+            Encryption.SaveEventFlags(EventFlagsSave.Save, MANUAL, directoryName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, MANUAL, directoryName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, MANUAL, directoryName, SAVES_PERMA);
             Encryption.SaveCombinedSaveFile(SaveLube.GetCombinedSaveFile(), MANUAL, directoryName, ModStrings.SAVES);
 
             Game1.instance.contentManager.audio.menu.Select.Play();

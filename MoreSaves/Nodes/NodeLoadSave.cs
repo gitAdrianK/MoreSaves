@@ -56,7 +56,7 @@ namespace MoreSaves.Nodes
         private static readonly Traverse traversePlayerStats;
         private static readonly Traverse traversePermaStats;
 
-        private string directory;
+        private readonly string directory;
 
         static NodeLoadSave()
         {

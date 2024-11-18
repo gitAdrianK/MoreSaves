@@ -12,7 +12,6 @@ namespace MoreSaves.Patching
     {
         private static readonly char SEP;
 
-        private static readonly Type encryption;
         private static readonly MethodInfo saveCombinedSaveFile;
         private static readonly MethodInfo savePlayerStats;
         private static readonly MethodInfo saveEventFlags;
@@ -22,7 +21,7 @@ namespace MoreSaves.Patching
         {
             SEP = Path.DirectorySeparatorChar;
 
-            encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
+            Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
 
             MethodInfo saveFile = encryption.GetMethod("SaveFile");
             saveCombinedSaveFile = saveFile.MakeGenericMethod(typeof(CombinedSaveFile));

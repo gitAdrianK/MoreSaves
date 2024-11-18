@@ -76,7 +76,6 @@
     <Compile Include="ModStrings.cs" />
     <Compile Include="Patching\AchievementManager.cs" />
     <Compile Include="Patching\Encryption.cs" />
-    <Compile Include="Patching\EndingManager.cs" />
     <Compile Include="Models\ExplorerTextButton.cs" />
     <Compile Include="Models\ModelLoadOptions.cs" />
     <Compile Include="ModEntry.cs" />

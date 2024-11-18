@@ -7,14 +7,12 @@ namespace MoreSaves.Patching
 {
     public class AchievementManager
     {
-        private static readonly Type achievementManager;
-
         private static readonly Traverse playerStats;
         private static readonly Traverse permaStats;
 
         static AchievementManager()
         {
-            achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+            Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
 
             object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
             Traverse achievementManagerTraverse = Traverse.Create(achievementManagerInstance);

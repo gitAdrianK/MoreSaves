@@ -103,8 +103,8 @@ namespace MoreSaves.Models
                 return emptySelector;
             }
 
-            var menuFactory = Traverse.Create(factory);
-            var guiFormat = menuFactory.Field("GUI_FORMAT").GetValue<GuiFormat>();
+            Traverse menuFactory = Traverse.Create(factory);
+            GuiFormat guiFormat = menuFactory.Field("GUI_FORMAT").GetValue<GuiFormat>();
             GuiFormat customFormat = guiFormat;
             customFormat.anchor = Vector2.Zero;
 

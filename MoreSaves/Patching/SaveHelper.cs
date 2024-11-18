@@ -3,15 +3,12 @@ using JumpKing.MiscEntities.WorldItems.Inventory;
 using JumpKing.MiscSystems.Achievements;
 using JumpKing.SaveThread;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace MoreSaves.Patching
 {
     public class SaveHelper
     {
-        private static readonly char SEP;
-
         private static readonly MethodInfo saveGeneralSettings;
         private static readonly HarmonyMethod saveGeneralSettingsPatch;
 
@@ -23,8 +20,6 @@ namespace MoreSaves.Patching
 
         static SaveHelper()
         {
-            SEP = Path.DirectorySeparatorChar;
-
             Type saveHelper = AccessTools.TypeByName("JumpKing.SaveThread.SaveHelper");
 
             MethodInfo save = saveHelper.GetMethod("Save");
