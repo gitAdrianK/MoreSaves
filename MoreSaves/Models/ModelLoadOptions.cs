@@ -1,18 +1,17 @@
-﻿using HarmonyLib;
-using JumpKing;
-using JumpKing.PauseMenu;
-using JumpKing.PauseMenu.BT;
-using LanguageJK;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MoreSaves.Nodes;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-
 namespace MoreSaves.Models
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using HarmonyLib;
+    using JumpKing;
+    using JumpKing.PauseMenu;
+    using JumpKing.PauseMenu.BT;
+    using LanguageJK;
+    using Microsoft.Xna.Framework;
+    using MoreSaves.Nodes;
+
     public class ModelLoadOptions
     {
         public enum PageOption
@@ -44,22 +43,22 @@ namespace MoreSaves.Models
         /// </summary>
         public static void SetupButtons()
         {
-            char sep = Path.DirectorySeparatorChar;
-            string dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{sep}";
-            string[] autoDirectories = Directory.GetDirectories($"{dllDirectory}{AUTO}{sep}");
-            string[] manualDirectories = Directory.GetDirectories($"{dllDirectory}{MANUAL}{sep}");
-            SpriteFont menuFontSmall = Game1.instance.contentManager.font.MenuFontSmall;
+            var sep = Path.DirectorySeparatorChar;
+            var dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{sep}";
+            var autoDirectories = Directory.GetDirectories($"{dllDirectory}{AUTO}{sep}");
+            var manualDirectories = Directory.GetDirectories($"{dllDirectory}{MANUAL}{sep}");
+            var menuFontSmall = Game1.instance.contentManager.font.MenuFontSmall;
 
             autoButtons = new List<TextButton>();
-            foreach (string directory in autoDirectories)
+            foreach (var directory in autoDirectories)
             {
-                string dir = directory.Split(sep).Last();
+                var dir = directory.Split(sep).Last();
                 autoButtons.Add(new TextButton(CropName(dir), new NodeLoadSave(AUTO, dir), menuFontSmall));
             }
             manualButtons = new List<TextButton>();
-            foreach (string directory in manualDirectories)
+            foreach (var directory in manualDirectories)
             {
-                string dir = directory.Split(sep).Last();
+                var dir = directory.Split(sep).Last();
                 manualButtons.Add(new TextButton(CropName(dir), new NodeLoadSave(MANUAL, dir), menuFontSmall));
             }
         }
@@ -97,23 +96,23 @@ namespace MoreSaves.Models
 
             if (buttons.Count() == 0)
             {
-                MenuSelectorClosePopup emptySelector = new MenuSelectorClosePopup(format);
+                var emptySelector = new MenuSelectorClosePopup(format);
                 emptySelector.AddChild(new TextInfo("No saves to load.", Color.Gray));
                 emptySelector.Initialize();
                 return emptySelector;
             }
 
-            Traverse menuFactory = Traverse.Create(factory);
-            GuiFormat guiFormat = menuFactory.Field("GUI_FORMAT").GetValue<GuiFormat>();
-            GuiFormat customFormat = guiFormat;
+            var menuFactory = Traverse.Create(factory);
+            var guiFormat = menuFactory.Field("GUI_FORMAT").GetValue<GuiFormat>();
+            var customFormat = guiFormat;
             customFormat.anchor = Vector2.Zero;
 
-            MenuSelectorClosePopup menuSelector = new MenuSelectorClosePopup(customFormat);
+            var menuSelector = new MenuSelectorClosePopup(customFormat);
 
             menuSelector.AddChild(new TextInfo("Load Save!", Color.White));
 
-            int num = 0;
-            for (int i = page * AMOUNT; i < page * AMOUNT + AMOUNT; i++)
+            var num = 0;
+            for (var i = page * AMOUNT; i < (page * AMOUNT) + AMOUNT; i++)
             {
                 if (num == AMOUNT)
                 {
@@ -132,7 +131,7 @@ namespace MoreSaves.Models
             {
                 menuSelector.AddChild(new TextButton(language.PAGINATION_PREVIOUS, new MenuSelectorBack(menuSelector)));
             }
-            if (page * AMOUNT + num < buttons.Count)
+            if ((page * AMOUNT) + num < buttons.Count)
             {
                 menuSelector.AddChild(new TextButton(language.PAGINATION_NEXT, CreateLoadOptions(factory, format, page + 1, pageOption)));
             }

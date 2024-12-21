@@ -1,20 +1,21 @@
-﻿using HarmonyLib;
-using JumpKing;
-using JumpKing.Mods;
-using JumpKing.PauseMenu;
-using JumpKing.PauseMenu.BT;
-using JumpKing.SaveThread;
-using LanguageJK;
-using Microsoft.Xna.Framework;
-using MoreSaves.Models;
-using MoreSaves.Nodes;
-using MoreSaves.Patching;
-using System.IO;
-using System.Reflection;
-using System.Text.RegularExpressions;
-
 namespace MoreSaves
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.IO;
+    using System.Reflection;
+    using System.Text.RegularExpressions;
+    using HarmonyLib;
+    using JumpKing;
+    using JumpKing.Mods;
+    using JumpKing.PauseMenu;
+    using JumpKing.PauseMenu.BT;
+    using JumpKing.SaveThread;
+    using LanguageJK;
+    using Microsoft.Xna.Framework;
+    using MoreSaves.Models;
+    using MoreSaves.Nodes;
+    using MoreSaves.Patching;
+
     [JumpKingMod(ModStrings.MODNAME)]
     public static class ModEntry
     {
@@ -22,10 +23,10 @@ namespace MoreSaves
         private const string MANUAL = ModStrings.MANUAL;
         private const string SAVES_PERMA = ModStrings.SAVES_PERMA;
 
-        public static string dllDirectory;
-        public static string exeDirectory;
+        public static string DllDirectory { get; private set; }
+        public static string ExeDirectory { get; private set; }
 
-        public static string saveName;
+        public static string SaveName { get; set; }
 
         [MainMenuItemSetting]
         public static TextButton LoadAutoSavefile(object factory, GuiFormat format)
@@ -44,17 +45,15 @@ namespace MoreSaves
         }
 
         [PauseMenuItemSetting]
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required for JK")]
         public static TextButton CreateManualSave(object factory, GuiFormat format)
-        {
-            return new TextButton("Create Manual Save", new NodeCreateManualSave());
-        }
+            => new TextButton("Create Manual Save", new NodeCreateManualSave());
 
         [MainMenuItemSetting]
         [PauseMenuItemSetting]
+        [SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Required for JK")]
         public static ExplorerTextButton OpenFolderExplorer(object factory, GuiFormat format)
-        {
-            return new ExplorerTextButton("Open Saves Folder", new NodeOpenFolderExplorer(), Color.Lime);
-        }
+            => new ExplorerTextButton("Open Saves Folder", new NodeOpenFolderExplorer(), Color.Lime);
 
         /// <summary>
         /// Called by Jump King before the level loads
@@ -64,25 +63,25 @@ namespace MoreSaves
         {
             //Debugger.Launch();
 
-            dllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
-            exeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";
+            DllDirectory = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}{Path.DirectorySeparatorChar}";
+            ExeDirectory = $"{Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)}{Path.DirectorySeparatorChar}";
 
-            if (!Directory.Exists($"{dllDirectory}{MANUAL}"))
+            if (!Directory.Exists($"{DllDirectory}{MANUAL}"))
             {
-                Directory.CreateDirectory($"{dllDirectory}{MANUAL}");
+                _ = Directory.CreateDirectory($"{DllDirectory}{MANUAL}");
             }
-            if (!Directory.Exists($"{dllDirectory}{AUTO}"))
+            if (!Directory.Exists($"{DllDirectory}{AUTO}"))
             {
-                Directory.CreateDirectory($"{dllDirectory}{AUTO}");
+                _ = Directory.CreateDirectory($"{DllDirectory}{AUTO}");
             }
 
             ModelLoadOptions.SetupButtons();
 
-            saveName = string.Empty;
+            SaveName = string.Empty;
 
-            Harmony harmony = new Harmony(ModStrings.MODNAME);
-            new SaveHelper(harmony);
-            new SaveLube(harmony);
+            var harmony = new Harmony(ModStrings.MODNAME);
+            _ = new SaveHelper(harmony);
+            _ = new SaveLube(harmony);
         }
 
         /// <summary>
@@ -96,27 +95,24 @@ namespace MoreSaves
                 return;
             }
 
-            saveName = SanitizeName(GetSaveName());
+            SaveName = SanitizeName(GetSaveName());
 
-            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), AUTO, saveName, SAVES_PERMA);
-            Encryption.SaveInventory(InventoryManager.GetInventory(), AUTO, saveName, SAVES_PERMA);
-            Encryption.SaveEventFlags(EventFlagsSave.Save, AUTO, saveName, SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, AUTO, saveName, SAVES_PERMA);
-            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, AUTO, saveName, SAVES_PERMA);
+            XmlWrapper.Serialize(SaveLube.GetGeneralSettings(), AUTO, SaveName, SAVES_PERMA);
+            Encryption.SaveInventory(InventoryManager.GetInventory(), AUTO, SaveName, SAVES_PERMA);
+            Encryption.SaveEventFlags(EventFlagsSave.Save, AUTO, SaveName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPlayerStats(), ModStrings.STATS, AUTO, SaveName, SAVES_PERMA);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, AUTO, SaveName, SAVES_PERMA);
         }
 
         /// <summary>
         /// Called by Jump King when the Level Ends
         /// </summary>
         [OnLevelEnd]
-        public static void OnLevelEnd()
-        {
-            saveName = string.Empty;
-        }
+        public static void OnLevelEnd() => SaveName = string.Empty;
 
         private static string GetSaveName()
         {
-            JKContentManager contentManager = Game1.instance.contentManager;
+            var contentManager = Game1.instance.contentManager;
             // This should never happen
             if (contentManager == null)
             {
@@ -148,11 +144,11 @@ namespace MoreSaves
             {
                 name = "Save_emptyName";
             }
-            foreach (char c in Path.GetInvalidFileNameChars())
+            foreach (var c in Path.GetInvalidFileNameChars())
             {
                 name = name.Replace(c, '#');
             }
-            foreach (char c in Path.GetInvalidPathChars())
+            foreach (var c in Path.GetInvalidPathChars())
             {
                 name = name.Replace(c, '#');
             }

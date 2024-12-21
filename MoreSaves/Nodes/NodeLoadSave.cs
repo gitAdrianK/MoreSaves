@@ -1,20 +1,19 @@
-﻿using BehaviorTree;
-using HarmonyLib;
-using JumpKing;
-using JumpKing.Level;
-using JumpKing.MiscEntities.WorldItems.Inventory;
-using JumpKing.MiscSystems.Achievements;
-using JumpKing.SaveThread;
-using JumpKing.SaveThread.SaveComponents;
-using JumpKing.Workshop;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-
 namespace MoreSaves.Nodes
 {
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+    using BehaviorTree;
+    using HarmonyLib;
+    using JumpKing;
+    using JumpKing.Level;
+    using JumpKing.MiscEntities.WorldItems.Inventory;
+    using JumpKing.MiscSystems.Achievements;
+    using JumpKing.SaveThread;
+    using JumpKing.SaveThread.SaveComponents;
+    using JumpKing.Workshop;
+
     /// <summary>
     /// Node to load a save from the mod into Jump King.
     /// All required fields will be set and the JK menu will reload/update.
@@ -34,27 +33,27 @@ namespace MoreSaves.Nodes
 
         private const string CONTENT = ModStrings.CONTENT;
 
-        private static readonly JKContentManager contentManager;
-        private static readonly SaveManager saveManager;
+        private static readonly JKContentManager ContentManager;
+        private static readonly SaveManager SaveManager;
 
-        private static readonly MethodInfo setCombinedSave;
-        private static readonly MethodInfo setPlayerStats;
-        private static readonly MethodInfo setPermanentStats;
-        private static readonly MethodInfo setInventory;
-        private static readonly MethodInfo setGeneralSettings;
+        private static readonly MethodInfo SetCombinedSave;
+        private static readonly MethodInfo SetPlayerStats;
+        private static readonly MethodInfo SetPermanentStats;
+        private static readonly MethodInfo SetInventory;
+        private static readonly MethodInfo SetGeneralSettings;
 
-        private static readonly MethodInfo setSkinEnabled;
+        private static readonly MethodInfo SetSkinEnabled;
 
-        private static readonly MethodInfo loadCombinedSaveFile;
-        private static readonly MethodInfo loadEventFlags;
-        private static readonly MethodInfo loadPlayerStats;
-        private static readonly MethodInfo loadInventory;
+        private static readonly MethodInfo LoadCombinedSaveFile;
+        private static readonly MethodInfo LoadEventFlags;
+        private static readonly MethodInfo LoadPlayerStats;
+        private static readonly MethodInfo LoadInventory;
 
-        private static readonly MethodInfo saveProgramStartInitialize;
-        private static readonly MethodInfo saveCombinedSaveFile;
+        private static readonly MethodInfo SaveProgramStartInitialize;
+        private static readonly MethodInfo SaveCombinedSaveFile;
 
-        private static readonly Traverse traversePlayerStats;
-        private static readonly Traverse traversePermaStats;
+        private static readonly Traverse TraversePlayerStats;
+        private static readonly Traverse TraversePermaStats;
 
         private readonly string directory;
 
@@ -63,43 +62,43 @@ namespace MoreSaves.Nodes
             SEP = Path.DirectorySeparatorChar;
 
             // Classes and methods.
-            contentManager = Game1.instance.contentManager;
-            saveManager = SaveManager.instance;
+            ContentManager = Game1.instance.contentManager;
+            SaveManager = SaveManager.instance;
 
-            Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
-            Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
-            Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
-            Type skinManager = AccessTools.TypeByName("JumpKing.Player.Skins.SkinManager");
+            var saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+            var encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
+            var achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+            var skinManager = AccessTools.TypeByName("JumpKing.Player.Skins.SkinManager");
 
-            setCombinedSave = saveLube.GetMethod("set_CombinedSave");
-            setPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
-            setPermanentStats = saveLube.GetMethod("set_PermanentPlayerStats");
-            setInventory = saveLube.GetMethod("set_inventory");
-            setGeneralSettings = saveLube.GetMethod("set_generalSettings");
+            SetCombinedSave = saveLube.GetMethod("set_CombinedSave");
+            SetPlayerStats = saveLube.GetMethod("set_PlayerStatsAttemptSnapshot");
+            SetPermanentStats = saveLube.GetMethod("set_PermanentPlayerStats");
+            SetInventory = saveLube.GetMethod("set_inventory");
+            SetGeneralSettings = saveLube.GetMethod("set_generalSettings");
 
-            setSkinEnabled = skinManager.GetMethod("SetSkinEnabled");
+            SetSkinEnabled = skinManager.GetMethod("SetSkinEnabled");
 
-            MethodInfo loadFile = encryption.GetMethod("LoadFile");
-            loadCombinedSaveFile = loadFile.MakeGenericMethod(typeof(CombinedSaveFile));
-            loadEventFlags = loadFile.MakeGenericMethod(typeof(EventFlagsSave));
-            loadPlayerStats = loadFile.MakeGenericMethod(typeof(PlayerStats));
-            loadInventory = loadFile.MakeGenericMethod(typeof(Inventory));
+            var loadFile = encryption.GetMethod("LoadFile");
+            LoadCombinedSaveFile = loadFile.MakeGenericMethod(typeof(CombinedSaveFile));
+            LoadEventFlags = loadFile.MakeGenericMethod(typeof(EventFlagsSave));
+            LoadPlayerStats = loadFile.MakeGenericMethod(typeof(PlayerStats));
+            LoadInventory = loadFile.MakeGenericMethod(typeof(Inventory));
 
-            saveProgramStartInitialize = saveLube.GetMethod("ProgramStartInitialize");
-            saveCombinedSaveFile = saveLube.GetMethod("SaveCombinedSaveFile");
+            SaveProgramStartInitialize = saveLube.GetMethod("ProgramStartInitialize");
+            SaveCombinedSaveFile = saveLube.GetMethod("SaveCombinedSaveFile");
 
-            object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            Traverse achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
-            traversePlayerStats = achievementManagerTraverse.Field("m_snapshot");
-            traversePermaStats = achievementManagerTraverse.Field("m_all_time_stats");
+            var achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            TraversePlayerStats = achievementManagerTraverse.Field("m_snapshot");
+            TraversePermaStats = achievementManagerTraverse.Field("m_all_time_stats");
         }
 
         public NodeLoadSave(params string[] folders)
         {
-            directory = ModEntry.dllDirectory;
-            foreach (string folder in folders)
+            this.directory = ModEntry.DllDirectory;
+            foreach (var folder in folders)
             {
-                directory += folder + SEP;
+                this.directory += folder + SEP;
             }
         }
 
@@ -107,15 +106,15 @@ namespace MoreSaves.Nodes
         {
             try
             {
-                saveManager.StopSaving();
+                SaveManager.StopSaving();
 
                 // Load from dllDirectory
-                CombinedSaveFile combinedSaveFile = (CombinedSaveFile)loadCombinedSaveFile.Invoke(null, new object[] { $"{directory}{SEP}{SAVES}{SEP}{COMBINED}" });
-                EventFlagsSave eventFlags = (EventFlagsSave)loadEventFlags.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{EVENT}" });
-                PlayerStats playerStats = (PlayerStats)loadPlayerStats.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{STATS}" });
-                PlayerStats permaStats = (PlayerStats)loadPlayerStats.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{PERMANENT}" });
-                Inventory inventory = (Inventory)loadInventory.Invoke(null, new object[] { $"{directory}{SEP}{SAVES_PERMA}{SEP}{INVENTORY}" });
-                GeneralSettings generalSettings = XmlSerializerHelper.Deserialize<GeneralSettings>($"{directory}{SEP}{SAVES_PERMA}{SEP}{SETTINGS}");
+                var combinedSaveFile = (CombinedSaveFile)LoadCombinedSaveFile.Invoke(null, new object[] { $"{this.directory}{SEP}{SAVES}{SEP}{COMBINED}" });
+                var eventFlags = (EventFlagsSave)LoadEventFlags.Invoke(null, new object[] { $"{this.directory}{SEP}{SAVES_PERMA}{SEP}{EVENT}" });
+                var playerStats = (PlayerStats)LoadPlayerStats.Invoke(null, new object[] { $"{this.directory}{SEP}{SAVES_PERMA}{SEP}{STATS}" });
+                var permaStats = (PlayerStats)LoadPlayerStats.Invoke(null, new object[] { $"{this.directory}{SEP}{SAVES_PERMA}{SEP}{PERMANENT}" });
+                var inventory = (Inventory)LoadInventory.Invoke(null, new object[] { $"{this.directory}{SEP}{SAVES_PERMA}{SEP}{INVENTORY}" });
+                var generalSettings = XmlSerializerHelper.Deserialize<GeneralSettings>($"{this.directory}{SEP}{SAVES_PERMA}{SEP}{SETTINGS}");
 
                 // Root and level.
                 string root;
@@ -132,51 +131,51 @@ namespace MoreSaves.Nodes
                 }
 
                 // Save and set
-                contentManager.ReinitializeAssets();
+                ContentManager.ReinitializeAssets();
 
                 if (root == CONTENT)
                 {
-                    contentManager.SetLevel(root);
+                    ContentManager.SetLevel(root);
                 }
                 else
                 {
-                    contentManager.SetLevel(root, level);
+                    ContentManager.SetLevel(root, level);
                 }
 
-                setCombinedSave.Invoke(null, new object[] { combinedSaveFile });
-                setPlayerStats.Invoke(null, new object[] { playerStats });
-                setPermanentStats.Invoke(null, new object[] { permaStats });
-                setInventory.Invoke(null, new object[] { inventory });
+                _ = SetCombinedSave.Invoke(null, new object[] { combinedSaveFile });
+                _ = SetPlayerStats.Invoke(null, new object[] { playerStats });
+                _ = SetPermanentStats.Invoke(null, new object[] { permaStats });
+                _ = SetInventory.Invoke(null, new object[] { inventory });
                 Patching.InventoryManager.SetInventory(inventory);
-                setGeneralSettings.Invoke(null, new object[] { generalSettings });
+                _ = SetGeneralSettings.Invoke(null, new object[] { generalSettings });
                 EventFlagsSave.Save = eventFlags;
 
-                List<ItemEquipOptions.ItemOption> options = new List<ItemEquipOptions.ItemOption>(generalSettings.item_options.Save.options);
+                var options = new List<ItemEquipOptions.ItemOption>(generalSettings.item_options.Save.options);
                 foreach (var option in options)
                 {
-                    setSkinEnabled.Invoke(null, new object[] { option.item, option.equipped });
+                    _ = SetSkinEnabled.Invoke(null, new object[] { option.item, option.equipped });
                 }
 
-                saveCombinedSaveFile.Invoke(null, null);
-                saveProgramStartInitialize.Invoke(null, null);
+                _ = SaveCombinedSaveFile.Invoke(null, null);
+                _ = SaveProgramStartInitialize.Invoke(null, null);
 
-                traversePlayerStats.SetValue(playerStats);
-                traversePermaStats.SetValue(permaStats);
+                _ = TraversePlayerStats.SetValue(playerStats);
+                _ = TraversePermaStats.SetValue(permaStats);
 
-                contentManager.LoadAssets(Game1.instance);
+                ContentManager.LoadAssets(Game1.instance);
                 LevelManager.LoadScreens();
 
-                contentManager.audio.menu.Select.Play();
+                ContentManager.audio.menu.Select.Play();
                 Game1.instance.m_game.UpdateMenu();
             }
             catch
             {
-                contentManager.audio.menu.MenuFail.Play();
+                ContentManager.audio.menu.MenuFail.Play();
                 return BTresult.Failure;
             }
             finally
             {
-                saveManager.StartSaving();
+                SaveManager.StartSaving();
             }
             return BTresult.Success;
         }

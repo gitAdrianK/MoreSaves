@@ -1,28 +1,21 @@
-﻿using HarmonyLib;
-using JumpKing.MiscEntities.WorldItems.Inventory;
-using System;
-
-namespace MoreSaves.Patching
+﻿namespace MoreSaves.Patching
 {
+    using HarmonyLib;
+    using JumpKing.MiscEntities.WorldItems.Inventory;
+
     public class InventoryManager
     {
-        private static readonly Traverse inventory;
+        private static readonly Traverse Inventory;
 
         static InventoryManager()
         {
-            Type inventoryManager = AccessTools.TypeByName("JumpKing.MiscEntities.WorldItems.Inventory.InventoryManager");
+            var inventoryManager = AccessTools.TypeByName("JumpKing.MiscEntities.WorldItems.Inventory.InventoryManager");
 
-            inventory = Traverse.Create(inventoryManager).Property("inventory");
+            Inventory = Traverse.Create(inventoryManager).Property("inventory");
         }
 
-        public static void SetInventory(Inventory inv)
-        {
-            inventory.SetValue(inv);
-        }
+        public static void SetInventory(Inventory inv) => Inventory.SetValue(inv);
 
-        public static Inventory GetInventory()
-        {
-            return inventory.GetValue<Inventory>();
-        }
+        public static Inventory GetInventory() => Inventory.GetValue<Inventory>();
     }
 }

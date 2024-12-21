@@ -1,11 +1,10 @@
-﻿using HarmonyLib;
-using JumpKing.SaveThread;
-using System;
-using System.IO;
-using System.Reflection;
-
-namespace MoreSaves.Patching
+﻿namespace MoreSaves.Patching
 {
+    using System.IO;
+    using System.Reflection;
+    using HarmonyLib;
+    using JumpKing.SaveThread;
+
     /// <summary>
     /// Patches the SaveLube class. 
     /// Function SaveCombinedSaveFile to also save at our mod location.
@@ -15,53 +14,53 @@ namespace MoreSaves.Patching
     {
         private static readonly char SEP;
 
-        private static readonly Traverse combinedSavefile;
-        private static readonly Traverse generalSettings;
+        private static readonly Traverse CombinedSavefile;
+        private static readonly Traverse GeneralSettings;
 
-        private static readonly MethodInfo saveCombinedSaveFile;
-        private static readonly HarmonyMethod saveCombinedPatch;
+        private static readonly MethodInfo MethodSaveCombinedSaveFile;
+        private static readonly HarmonyMethod MethodSaveCombinedPatch;
 
-        private static readonly MethodInfo deleteSave;
-        private static readonly HarmonyMethod deletePatch;
+        private static readonly MethodInfo MethodDeleteSave;
+        private static readonly HarmonyMethod MethodDeletePatch;
 
         static SaveLube()
         {
             SEP = Path.DirectorySeparatorChar;
 
-            Type saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
+            var saveLube = AccessTools.TypeByName("JumpKing.SaveThread.SaveLube");
 
-            combinedSavefile = Traverse.Create(saveLube).Property("CombinedSave");
-            generalSettings = Traverse.Create(saveLube).Property("generalSettings");
+            CombinedSavefile = Traverse.Create(saveLube).Property("CombinedSave");
+            GeneralSettings = Traverse.Create(saveLube).Property("generalSettings");
 
-            MethodInfo genericSave = saveLube.GetMethod("Save");
-            saveCombinedSaveFile = genericSave.MakeGenericMethod(typeof(CombinedSaveFile));
-            saveCombinedPatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(SaveCombinedSaveFile)));
+            var genericSave = saveLube.GetMethod("Save");
+            MethodSaveCombinedSaveFile = genericSave.MakeGenericMethod(typeof(CombinedSaveFile));
+            MethodSaveCombinedPatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(SaveCombinedSaveFile)));
 
-            deleteSave = saveLube.GetMethod("DeleteSaves");
-            deletePatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(DeleteSaves)));
+            MethodDeleteSave = saveLube.GetMethod("DeleteSaves");
+            MethodDeletePatch = new HarmonyMethod(typeof(SaveLube).GetMethod(nameof(DeleteSaves)));
         }
 
         public SaveLube(Harmony harmony)
         {
-            harmony.Patch(
-                saveCombinedSaveFile,
-                postfix: saveCombinedPatch
+            _ = harmony.Patch(
+                MethodSaveCombinedSaveFile,
+                postfix: MethodSaveCombinedPatch
             );
 
-            harmony.Patch(
-                deleteSave,
-                postfix: deletePatch
+            _ = harmony.Patch(
+                MethodDeleteSave,
+                postfix: MethodDeletePatch
             );
         }
 
         public static void SaveCombinedSaveFile(CombinedSaveFile p_object)
         {
-            if (ModEntry.saveName == string.Empty)
+            if (ModEntry.SaveName == string.Empty)
             {
                 return;
             }
-            Encryption.SaveCombinedSaveFile(p_object, ModStrings.AUTO, ModEntry.saveName, ModStrings.SAVES);
-            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, ModStrings.AUTO, ModEntry.saveName, ModStrings.SAVES_PERMA);
+            Encryption.SaveCombinedSaveFile(p_object, ModStrings.AUTO, ModEntry.SaveName, ModStrings.SAVES);
+            Encryption.SavePlayerStats(AchievementManager.GetPermaStats(), ModStrings.PERMANENT, ModStrings.AUTO, ModEntry.SaveName, ModStrings.SAVES_PERMA);
         }
 
         /// <summary>
@@ -69,26 +68,22 @@ namespace MoreSaves.Patching
         /// </summary>
         public static void DeleteSaves()
         {
-            if (ModEntry.saveName == string.Empty)
+            if (ModEntry.SaveName == string.Empty)
             {
                 return;
             }
-            string directory = $"{ModEntry.dllDirectory}{SEP}{ModStrings.AUTO}{SEP}{ModEntry.saveName}{SEP}";
+            var directory = $"{ModEntry.DllDirectory}{SEP}{ModStrings.AUTO}{SEP}{ModEntry.SaveName}{SEP}";
             if (Directory.Exists(directory))
             {
                 Directory.Delete(directory, true);
             }
-            ModEntry.saveName = string.Empty;
+            ModEntry.SaveName = string.Empty;
         }
 
         public static CombinedSaveFile GetCombinedSaveFile()
-        {
-            return combinedSavefile.GetValue<CombinedSaveFile>();
-        }
+            => CombinedSavefile.GetValue<CombinedSaveFile>();
 
         public static GeneralSettings GetGeneralSettings()
-        {
-            return generalSettings.GetValue<GeneralSettings>();
-        }
+            => GeneralSettings.GetValue<GeneralSettings>();
     }
 }

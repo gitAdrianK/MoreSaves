@@ -1,33 +1,32 @@
-﻿using HarmonyLib;
-using JumpKing.MiscEntities.WorldItems.Inventory;
-using JumpKing.MiscSystems.Achievements;
-using JumpKing.SaveThread;
-using System;
-using System.IO;
-using System.Reflection;
-
-namespace MoreSaves.Patching
+﻿namespace MoreSaves.Patching
 {
+    using System.IO;
+    using System.Reflection;
+    using HarmonyLib;
+    using JumpKing.MiscEntities.WorldItems.Inventory;
+    using JumpKing.MiscSystems.Achievements;
+    using JumpKing.SaveThread;
+
     public class Encryption
     {
         private static readonly char SEP;
 
-        private static readonly MethodInfo saveCombinedSaveFile;
-        private static readonly MethodInfo savePlayerStats;
-        private static readonly MethodInfo saveEventFlags;
-        private static readonly MethodInfo saveInventory;
+        private static readonly MethodInfo MethodSaveCombinedSaveFile;
+        private static readonly MethodInfo MethodSavePlayerStats;
+        private static readonly MethodInfo MethodSaveEventFlags;
+        private static readonly MethodInfo MethodSaveInventory;
 
         static Encryption()
         {
             SEP = Path.DirectorySeparatorChar;
 
-            Type encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
+            var encryption = AccessTools.TypeByName("FileUtil.Encryption.Encryption");
 
-            MethodInfo saveFile = encryption.GetMethod("SaveFile");
-            saveCombinedSaveFile = saveFile.MakeGenericMethod(typeof(CombinedSaveFile));
-            savePlayerStats = saveFile.MakeGenericMethod(typeof(PlayerStats));
-            saveEventFlags = saveFile.MakeGenericMethod(typeof(EventFlagsSave));
-            saveInventory = saveFile.MakeGenericMethod(typeof(Inventory));
+            var saveFile = encryption.GetMethod("SaveFile");
+            MethodSaveCombinedSaveFile = saveFile.MakeGenericMethod(typeof(CombinedSaveFile));
+            MethodSavePlayerStats = saveFile.MakeGenericMethod(typeof(PlayerStats));
+            MethodSaveEventFlags = saveFile.MakeGenericMethod(typeof(EventFlagsSave));
+            MethodSaveInventory = saveFile.MakeGenericMethod(typeof(Inventory));
         }
 
         /// <summary>
@@ -38,8 +37,8 @@ namespace MoreSaves.Patching
         /// <param name="folders">The folders making up the path to the save, starting from the path to the dll</param>
         public static void SaveCombinedSaveFile(CombinedSaveFile combinedSave, params string[] folders)
         {
-            string path = BuildAndCreatePath(folders);
-            saveCombinedSaveFile.Invoke(null, new object[] { $"{path}{ModStrings.COMBINED}", combinedSave });
+            var path = BuildAndCreatePath(folders);
+            _ = MethodSaveCombinedSaveFile.Invoke(null, new object[] { $"{path}{ModStrings.COMBINED}", combinedSave });
         }
 
         /// <summary>
@@ -50,8 +49,8 @@ namespace MoreSaves.Patching
         /// <param name="folders">The folders making up the path to the save, starting from the path to the dll</param>
         public static void SavePlayerStats(PlayerStats playerStats, string name, params string[] folders)
         {
-            string path = BuildAndCreatePath(folders);
-            savePlayerStats.Invoke(null, new object[] { $"{path}{name}", playerStats });
+            var path = BuildAndCreatePath(folders);
+            _ = MethodSavePlayerStats.Invoke(null, new object[] { $"{path}{name}", playerStats });
         }
 
         /// <summary>
@@ -61,8 +60,8 @@ namespace MoreSaves.Patching
         /// <param name="folders">The folders making up the path to the save, starting from the path to the dll</param>
         public static void SaveEventFlags(EventFlagsSave eventFlags, params string[] folders)
         {
-            string path = BuildAndCreatePath(folders);
-            saveEventFlags.Invoke(null, new object[] { $"{path}{ModStrings.EVENT}", eventFlags });
+            var path = BuildAndCreatePath(folders);
+            _ = MethodSaveEventFlags.Invoke(null, new object[] { $"{path}{ModStrings.EVENT}", eventFlags });
         }
 
         /// <summary>
@@ -72,8 +71,8 @@ namespace MoreSaves.Patching
         /// <param name="folders">The folders making up the path to the save, starting from the path to the dll</param>
         public static void SaveInventory(Inventory inventory, params string[] folders)
         {
-            string path = BuildAndCreatePath(folders);
-            saveInventory.Invoke(null, new object[] { $"{path}{ModStrings.INVENTORY}", inventory });
+            var path = BuildAndCreatePath(folders);
+            _ = MethodSaveInventory.Invoke(null, new object[] { $"{path}{ModStrings.INVENTORY}", inventory });
         }
 
         /// <summary>
@@ -83,13 +82,13 @@ namespace MoreSaves.Patching
         /// <returns>The path</returns>
         private static string BuildAndCreatePath(params string[] folders)
         {
-            string path = ModEntry.dllDirectory;
-            foreach (string folder in folders)
+            var path = ModEntry.DllDirectory;
+            foreach (var folder in folders)
             {
                 path += folder + SEP;
                 if (!Directory.Exists(path))
                 {
-                    Directory.CreateDirectory(path);
+                    _ = Directory.CreateDirectory(path);
                 }
             }
             return path;

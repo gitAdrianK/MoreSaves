@@ -1,4 +1,4 @@
-﻿namespace MoreSaves
+namespace MoreSaves
 {
     /// <summary>
     /// Freqently used compiletime strings.

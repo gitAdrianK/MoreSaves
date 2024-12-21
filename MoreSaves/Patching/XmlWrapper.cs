@@ -1,20 +1,17 @@
-﻿using JumpKing.SaveThread;
-using System.IO;
-
-namespace MoreSaves.Patching
+﻿namespace MoreSaves.Patching
 {
+    using System.IO;
+    using JumpKing.SaveThread;
+
     public static class XmlWrapper
     {
         private static readonly char SEP;
 
-        static XmlWrapper()
-        {
-            SEP = Path.DirectorySeparatorChar;
-        }
+        static XmlWrapper() => SEP = Path.DirectorySeparatorChar;
 
         public static void Serialize(GeneralSettings generalSettings, params string[] folders)
         {
-            string path = BuildAndCreatePath(folders) + SEP + ModStrings.SETTINGS;
+            var path = BuildAndCreatePath(folders) + SEP + ModStrings.SETTINGS;
             XmlSerializerHelper.Serialize(path, generalSettings);
         }
 
@@ -25,13 +22,13 @@ namespace MoreSaves.Patching
         /// <returns>The path</returns>
         private static string BuildAndCreatePath(params string[] folders)
         {
-            string path = ModEntry.dllDirectory;
-            foreach (string folder in folders)
+            var path = ModEntry.DllDirectory;
+            foreach (var folder in folders)
             {
                 path += folder + SEP;
                 if (!Directory.Exists(path))
                 {
-                    Directory.CreateDirectory(path);
+                    _ = Directory.CreateDirectory(path);
                 }
             }
             return path;

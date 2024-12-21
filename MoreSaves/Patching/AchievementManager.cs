@@ -1,34 +1,27 @@
-﻿using HarmonyLib;
-using JumpKing.MiscSystems.Achievements;
-using System;
-using System.Reflection;
-
-namespace MoreSaves.Patching
+﻿namespace MoreSaves.Patching
 {
+    using System.Reflection;
+    using HarmonyLib;
+    using JumpKing.MiscSystems.Achievements;
+
     public class AchievementManager
     {
-        private static readonly Traverse playerStats;
-        private static readonly Traverse permaStats;
+        private static readonly Traverse PlayerStats;
+        private static readonly Traverse PermaStats;
 
         static AchievementManager()
         {
-            Type achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
+            var achievementManager = AccessTools.TypeByName("JumpKing.MiscSystems.Achievements.AchievementManager");
 
-            object achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
-            Traverse achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
+            var achievementManagerInstance = achievementManager.GetField("instance", BindingFlags.NonPublic | BindingFlags.Static).GetValue(null);
+            var achievementManagerTraverse = Traverse.Create(achievementManagerInstance);
 
-            playerStats = achievementManagerTraverse.Field("m_snapshot");
-            permaStats = achievementManagerTraverse.Field("m_all_time_stats");
+            PlayerStats = achievementManagerTraverse.Field("m_snapshot");
+            PermaStats = achievementManagerTraverse.Field("m_all_time_stats");
         }
 
-        public static PlayerStats GetPlayerStats()
-        {
-            return playerStats.GetValue<PlayerStats>();
-        }
+        public static PlayerStats GetPlayerStats() => PlayerStats.GetValue<PlayerStats>();
 
-        public static PlayerStats GetPermaStats()
-        {
-            return permaStats.GetValue<PlayerStats>();
-        }
+        public static PlayerStats GetPermaStats() => PermaStats.GetValue<PlayerStats>();
     }
 }
